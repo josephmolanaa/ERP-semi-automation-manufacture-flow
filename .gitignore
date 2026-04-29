@@ -1,0 +1,40 @@
+# Laravel / PHP
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+.phpunit.cache
+/auth.json
+Homestead.json
+Homestead.yaml
+Thumbs.db
+
+# Dependencies - exclude vendor folders (too large)
+erp-cnc/vendor/
+erp-cnc/node_modules/
+erp-cnc/public/build/
+erp-cnc/public/hot/
+erp-cnc/public/storage/
+erp-cnc/storage/*.key
+erp-cnc/storage/pail/
+erp-cnc/storage/logs/
+vendor/
+node_modules/
+
+# IDE / Editor
+.fleet/
+.idea/
+.nova/
+.vscode/
+.zed/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Composer lock (optional: keep for reproducibility)
+# composer.lock
