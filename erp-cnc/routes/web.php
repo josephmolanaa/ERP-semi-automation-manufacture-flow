@@ -5,9 +5,7 @@ use App\Models\Quotation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect('/admin');
-});
+Route::redirect('/', '/admin');
 
 Route::get('/quotation/approve/{token}', [QuotationApprovalController::class, 'approve'])
     ->name('quotation.approve');
