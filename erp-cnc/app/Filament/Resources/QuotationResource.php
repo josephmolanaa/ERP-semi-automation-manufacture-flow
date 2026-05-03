@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\QuotationResource\Pages;
 use App\Models\Customer;
 use App\Models\Quotation;
+use BackedEnum;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -20,13 +21,14 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class QuotationResource extends Resource
 {
     protected static ?string $model = Quotation::class;
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Penawaran';
-    protected static ?string $navigationGroup = 'Sales';
+    protected static UnitEnum|string|null $navigationGroup = 'Sales';
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
