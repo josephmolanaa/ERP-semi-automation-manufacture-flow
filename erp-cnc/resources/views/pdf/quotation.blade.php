@@ -29,7 +29,7 @@
 <body>
     <div class="header">
         <div>
-            <div class="company-name">⚙ CNC FLOW</div>
+            <div class="company-name">CNC FLOW</div>
             <div style="font-size:10px; opacity:0.7; margin-top:4px">Precision CNC Machining & Custom Parts</div>
         </div>
         <div style="text-align:right">

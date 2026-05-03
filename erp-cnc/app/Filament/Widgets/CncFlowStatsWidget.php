@@ -54,7 +54,7 @@ class CncFlowStatsWidget extends BaseWidget
                 ->color('warning'),
 
             Stat::make('Job Order Aktif', $jobPending)
-                ->description($jobDelayed > 0 ? "⚠️ {$jobDelayed} Delayed" : 'Semua on-track')
+                ->description($jobDelayed > 0 ? "{$jobDelayed} Delayed" : 'Semua on-track')
                 ->descriptionIcon('heroicon-m-cog-6-tooth')
                 ->color($jobDelayed > 0 ? 'danger' : 'success'),
 

@@ -30,9 +30,9 @@
     <p>Detail lengkap terlampir dalam file PDF. Untuk persetujuan, silakan klik tombol di bawah:</p>
 
     <p>
-        <a href="{{ $approvalUrl }}&action=approve" class="btn">✅ Setujui Penawaran</a>
+        <a href="{{ $approvalUrl }}?action=approve" class="btn">Setujui Penawaran</a>
         &nbsp;&nbsp;
-        <a href="{{ $approvalUrl }}&action=reject" class="btn btn-reject">❌ Tolak Penawaran</a>
+        <a href="{{ $approvalUrl }}?action=reject" class="btn btn-reject">Tolak Penawaran</a>
     </p>
 
     <p><small>Link ini berlaku hingga {{ $quotation->berlaku_sampai->format('d F Y') }}. 
