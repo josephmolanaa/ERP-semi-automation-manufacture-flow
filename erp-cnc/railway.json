@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "npm run build"
+    "buildCommand": "npm run build && php artisan filament:assets"
   },
   "deploy": {
     "preDeployCommand": "chmod +x ./railway/init-app.sh && sh ./railway/init-app.sh",
