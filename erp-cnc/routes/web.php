@@ -5,6 +5,8 @@ use App\Models\Quotation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/health', fn () => response()->json(['status' => 'ok']));
+
 Route::redirect('/', '/admin');
 
 Route::get('/quotation/approve/{token}', [QuotationApprovalController::class, 'approve'])
