@@ -7,13 +7,12 @@ use App\Filament\Resources\QuotationResource\Pages;
 use App\Models\Customer;
 use App\Models\Quotation;
 use BackedEnum;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
@@ -31,9 +30,9 @@ class QuotationResource extends Resource
     protected static UnitEnum|string|null $navigationGroup = 'Sales';
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make('Informasi Penawaran')
                 ->columns(2)
                 ->schema([
@@ -103,7 +102,7 @@ class QuotationResource extends Resource
                                 ->numeric()
                                 ->required()
                                 ->live(debounce: 500)
-                                ->afterStateUpdated(fn ($state, Forms\Set $set, Forms\Get $get) =>
+                                ->afterStateUpdated(fn ($state, $set, $get) =>
                                     $set('subtotal', (float)$state * (float)$get('harga_satuan'))
                                 ),
 
@@ -118,7 +117,7 @@ class QuotationResource extends Resource
                                 ->prefix('Rp')
                                 ->required()
                                 ->live(debounce: 500)
-                                ->afterStateUpdated(fn ($state, Forms\Set $set, Forms\Get $get) =>
+                                ->afterStateUpdated(fn ($state, $set, $get) =>
                                     $set('subtotal', (float)$state * (float)$get('qty'))
                                 ),
 
