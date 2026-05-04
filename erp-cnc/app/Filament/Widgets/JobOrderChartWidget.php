@@ -8,7 +8,7 @@ use Filament\Widgets\ChartWidget;
 
 class JobOrderChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Status Job Order';
+    protected ?string $heading = 'Status Job Order';
     protected static ?int $sort = 2;
 
     protected function getData(): array
