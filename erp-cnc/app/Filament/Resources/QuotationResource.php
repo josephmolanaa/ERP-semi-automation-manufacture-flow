@@ -18,7 +18,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
@@ -133,7 +132,6 @@ class QuotationResource extends Resource
                                 ->columnSpanFull(),
                         ])
                         ->columns(4)
-                        ->reorderable('urutan')
                         ->addActionLabel('+ Tambah Item')
                         ->columnSpanFull(),
                 ]),
@@ -166,14 +164,16 @@ class QuotationResource extends Resource
                             ? 'danger' : null
                     ),
 
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors([
-                        'gray'    => 'draft',
-                        'info'    => 'sent',
-                        'success' => 'approved',
-                        'danger'  => 'rejected',
-                        'warning' => 'converted',
-                    ])
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'sent' => 'info',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        'converted' => 'warning',
+                        default => 'gray',
+                    })
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'draft'     => 'Draft',
                         'sent'      => 'Terkirim',
@@ -241,7 +241,7 @@ class QuotationResource extends Resource
 
                 // ── Action: Convert to PO ────────────────────────────────
                 Tables\Actions\Action::make('convert_to_po')
-                    ->label('Convert → PO')
+                    ->label('Convert ke PO')
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color('success')
                     ->visible(fn ($record) => $record->status === 'approved')
@@ -281,7 +281,9 @@ class QuotationResource extends Resource
     {
         $query = parent::getEloquentQuery();
 
-        if (auth()->user()->hasRole('sales') && !auth()->user()->hasRole('admin')) {
+        $user = auth()->user();
+
+        if ($user && $user->hasRole('sales') && ! $user->hasRole('admin')) {
             $query->where('created_by', auth()->id());
         }
 
