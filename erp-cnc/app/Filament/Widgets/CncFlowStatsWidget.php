@@ -13,6 +13,12 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class CncFlowStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+    protected int | string | array $columnSpan = 'full';
+
+    protected function getColumns(): int
+    {
+        return 5;
+    }
 
     protected function getStats(): array
     {

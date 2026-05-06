@@ -32,15 +32,16 @@ class QuotationResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Informasi Penawaran')
-                ->columns(2)
+            \Filament\Forms\Components\Group::make()->schema([
+                Section::make('Informasi Customer')
+                // ->columns(2)
                 ->schema([
-                    TextInput::make('nomor')
+                    /* TextInput::make('nomor')
                         ->label('Nomor Quotation')
                         ->default(fn () => Quotation::generateNomor())
                         ->disabled()
                         ->dehydrated()
-                        ->required(),
+                        ->required(), */
 
                     Select::make('customer_id')
                         ->label('Customer')
@@ -55,7 +56,7 @@ class QuotationResource extends Resource
                             TextInput::make('phone'),
                         ]),
 
-                    DatePicker::make('tanggal')
+                    /* DatePicker::make('tanggal')
                         ->label('Tanggal')
                         ->default(today())
                         ->required(),
@@ -75,7 +76,7 @@ class QuotationResource extends Resource
                         ])
                         ->default('draft')
                         ->disabled(fn ($record) => $record?->status === 'converted')
-                        ->required(),
+                        ->required(), */
 
                     Textarea::make('catatan')
                         ->label('Catatan')
@@ -135,7 +136,41 @@ class QuotationResource extends Resource
                         ->addActionLabel('+ Tambah Item')
                         ->columnSpanFull(),
                 ]),
-        ]);
+            ])->columnSpan(['lg' => 2]),
+
+            \Filament\Forms\Components\Group::make()->schema([
+                Section::make('Status & Dokumen')->schema([
+                    TextInput::make('nomor')
+                        ->label('Nomor Quotation')
+                        ->default(fn () => Quotation::generateNomor())
+                        ->disabled()
+                        ->dehydrated()
+                        ->required(),
+
+                    Select::make('status')
+                        ->options([
+                            'draft'     => 'Draft',
+                            'sent'      => 'Terkirim',
+                            'approved'  => 'Disetujui',
+                            'rejected'  => 'Ditolak',
+                            'converted' => 'Converted ke PO',
+                        ])
+                        ->default('draft')
+                        ->disabled(fn ($record) => $record?->status === 'converted')
+                        ->required(),
+
+                    DatePicker::make('tanggal')
+                        ->label('Tanggal')
+                        ->default(today())
+                        ->required(),
+
+                    DatePicker::make('berlaku_sampai')
+                        ->label('Berlaku Sampai')
+                        ->default(today()->addDays(14))
+                        ->required(),
+                ])
+            ])->columnSpan(['lg' => 1]),
+        ])->columns(3);
     }
 
     public static function table(Table $table): Table

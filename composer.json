@@ -1,0 +1,9 @@
+{
+    "require": {
+        "spatie/laravel-medialibrary": "^11.21",
+        "laravel/sanctum": "^4.3"
+    },
+    "require-dev": {
+        "laravel/telescope": "^0.1.0"
+    }
+}
