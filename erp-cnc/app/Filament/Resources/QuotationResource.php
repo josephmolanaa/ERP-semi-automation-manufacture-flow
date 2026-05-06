@@ -32,7 +32,7 @@ class QuotationResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            \Filament\Forms\Components\Group::make()->schema([
+            \Filament\Schemas\Components\Group::make()->schema([
                 Section::make('Informasi Customer')
                 // ->columns(2)
                 ->schema([
@@ -138,7 +138,7 @@ class QuotationResource extends Resource
                 ]),
             ])->columnSpan(['lg' => 2]),
 
-            \Filament\Forms\Components\Group::make()->schema([
+            \Filament\Schemas\Components\Group::make()->schema([
                 Section::make('Status & Dokumen')->schema([
                     TextInput::make('nomor')
                         ->label('Nomor Quotation')
