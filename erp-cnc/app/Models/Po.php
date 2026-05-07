@@ -16,7 +16,7 @@ class Po extends Model
 
     protected $fillable = [
         'nomor_po', 'quotation_id', 'customer_id', 'created_by',
-        'tanggal_po', 'estimasi_selesai', 'status', 'total', 'catatan',
+        'tanggal_po', 'estimasi_selesai', 'status', 'total', 'catatan', 'pdf_path',
     ];
 
     protected $casts = [

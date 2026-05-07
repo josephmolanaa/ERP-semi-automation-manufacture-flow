@@ -14,7 +14,7 @@ class SuratJalan extends Model
     protected $fillable = [
         'nomor_sj', 'job_order_id', 'created_by', 'tanggal_kirim',
         'ekspedisi', 'no_resi', 'penerima', 'alamat_kirim',
-        'status', 'diterima_at', 'catatan',
+        'status', 'diterima_at', 'catatan', 'pdf_path',
     ];
 
     protected $casts = [

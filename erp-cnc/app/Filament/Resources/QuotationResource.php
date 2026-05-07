@@ -16,9 +16,12 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 use UnitEnum;
 
 class QuotationResource extends Resource
@@ -168,6 +171,15 @@ class QuotationResource extends Resource
                         ->label('Berlaku Sampai')
                         ->default(today()->addDays(14))
                         ->required(),
+
+                    FileUpload::make('pdf_path')
+                        ->label('Upload PDF Penawaran')
+                        ->disk('public')
+                        ->directory('documents/quotations')
+                        ->acceptedFileTypes(['application/pdf'])
+                        ->preserveFilenames()
+                        ->downloadable()
+                        ->openable(),
                 ])
             ])->columnSpan(['lg' => 1]),
         ])->columns(3);
@@ -223,6 +235,11 @@ class QuotationResource extends Resource
                     ->money('IDR')
                     ->sortable(),
 
+                IconColumn::make('pdf_path')
+                    ->label('PDF')
+                    ->boolean()
+                    ->getStateUsing(fn ($record): bool => filled($record->pdf_path)),
+
                 TextColumn::make('createdBy.name')
                     ->label('Dibuat Oleh')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -267,8 +284,16 @@ class QuotationResource extends Resource
                     }),
 
                 // ── Action: Download PDF ─────────────────────────────────
+                Tables\Actions\Action::make('uploaded_pdf')
+                    ->label('PDF Upload')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('gray')
+                    ->visible(fn ($record): bool => filled($record->pdf_path))
+                    ->url(fn ($record): string => Storage::disk('public')->url($record->pdf_path))
+                    ->openUrlInNewTab(),
+
                 Tables\Actions\Action::make('download_pdf')
-                    ->label('PDF')
+                    ->label('PDF Generate')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
                     ->url(fn ($record) => route('quotation.pdf', $record))

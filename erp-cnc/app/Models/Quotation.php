@@ -17,7 +17,7 @@ class Quotation extends Model
     protected $fillable = [
         'nomor', 'customer_id', 'created_by', 'tanggal',
         'berlaku_sampai', 'status', 'total_harga',
-        'catatan', 'approval_token', 'approved_at', 'sent_at',
+        'catatan', 'pdf_path', 'approval_token', 'approved_at', 'sent_at',
     ];
 
     protected $casts = [

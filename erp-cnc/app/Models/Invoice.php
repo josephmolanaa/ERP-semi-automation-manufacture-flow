@@ -13,7 +13,7 @@ class Invoice extends Model
     protected $fillable = [
         'nomor_invoice', 'sj_id', 'created_by', 'tanggal',
         'jatuh_tempo', 'total', 'jumlah_bayar', 'status_bayar',
-        'paid_at', 'catatan',
+        'paid_at', 'catatan', 'pdf_path',
     ];
 
     protected $casts = [

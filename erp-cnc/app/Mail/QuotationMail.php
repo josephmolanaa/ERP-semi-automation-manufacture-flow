@@ -41,6 +41,14 @@ class QuotationMail extends Mailable
 
     public function attachments(): array
     {
+        if ($this->quotation->pdf_path) {
+            return [
+                Attachment::fromStorageDisk('public', $this->quotation->pdf_path)
+                    ->as("Penawaran-{$this->quotation->nomor}.pdf")
+                    ->withMime('application/pdf'),
+            ];
+        }
+
         // Generate PDF on-the-fly
         $pdf = Pdf::loadView('pdf.quotation', [
             'quotation' => $this->quotation,
