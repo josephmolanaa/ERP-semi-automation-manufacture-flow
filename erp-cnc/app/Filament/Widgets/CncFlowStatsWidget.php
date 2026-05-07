@@ -25,12 +25,12 @@ class CncFlowStatsWidget extends BaseWidget
         $bulanIni = now()->startOfMonth();
 
         // Quotation bulan ini
-        $quotasiCount  = Quotation::whereMonth('tanggal', now()->month)->count();
-        $quotasiValue  = Quotation::whereMonth('tanggal', now()->month)->sum('total_harga');
+        $quotasiCount  = Quotation::where('tanggal', '>=', $bulanIni)->count();
+        $quotasiValue  = Quotation::where('tanggal', '>=', $bulanIni)->sum('total_harga');
 
         // PO masuk bulan ini
-        $poCount       = Po::whereMonth('tanggal_po', now()->month)->count();
-        $poValue       = Po::whereMonth('tanggal_po', now()->month)->sum('total');
+        $poCount       = Po::where('tanggal_po', '>=', $bulanIni)->count();
+        $poValue       = Po::where('tanggal_po', '>=', $bulanIni)->sum('total');
 
         // Job Order aktif
         $jobPending    = JobOrder::whereIn('status', ['pending', 'design', 'machining', 'assembly', 'qc'])->count();
@@ -42,11 +42,13 @@ class CncFlowStatsWidget extends BaseWidget
 
         // Revenue bulan ini (invoice paid)
         $revenue = Invoice::where('status_bayar', 'paid')
-                       ->whereMonth('tanggal', now()->month)
+                       ->where('tanggal', '>=', $bulanIni)
                        ->sum('total');
 
         // Piutang outstanding
-        $piutang = Invoice::whereIn('status_bayar', ['unpaid', 'partial'])->sum('total');
+        $piutang = Invoice::whereIn('status_bayar', ['unpaid', 'partial'])
+            ->get()
+            ->sum(fn (Invoice $invoice): float => $invoice->sisa_tagihan);
 
         return [
             Stat::make('Penawaran Bulan Ini', $quotasiCount)
