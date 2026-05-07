@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SuratJalanResource\Pages;
 use App\Models\SuratJalan;
+use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\DatePicker;
@@ -19,12 +20,13 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
+use UnitEnum;
 
 class SuratJalanResource extends Resource
 {
     protected static ?string $model = SuratJalan::class;
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
-    protected static ?string $navigationGroup = 'Sales';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
+    protected static UnitEnum|string|null $navigationGroup = 'Sales';
 
     public static function form(Schema $schema): Schema
     {

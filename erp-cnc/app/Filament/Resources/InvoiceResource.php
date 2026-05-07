@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Invoice;
+use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\DatePicker;
@@ -19,12 +20,13 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
+use UnitEnum;
 
 class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
-    protected static ?string $navigationIcon = 'heroicon-o-document-currency-dollar';
-    protected static ?string $navigationGroup = 'Finance';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
+    protected static UnitEnum|string|null $navigationGroup = 'Finance';
 
     public static function form(Schema $schema): Schema
     {

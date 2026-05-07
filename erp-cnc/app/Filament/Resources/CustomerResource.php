@@ -16,12 +16,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use BackedEnum;
+use UnitEnum;
 
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'Master Data';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static UnitEnum|string|null $navigationGroup = 'Master Data';
 
     public static function form(Schema $schema): Schema
     {

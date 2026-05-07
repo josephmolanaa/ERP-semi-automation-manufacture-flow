@@ -6,6 +6,7 @@ use App\Filament\Resources\JobOrderResource\Pages;
 use App\Models\JobProgress;
 use App\Models\JobOrder;
 use App\Models\User;
+use BackedEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -20,12 +21,13 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class JobOrderResource extends Resource
 {
     protected static ?string $model = JobOrder::class;
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static ?string $navigationGroup = 'Produksi';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static UnitEnum|string|null $navigationGroup = 'Produksi';
 
     public static function form(Schema $schema): Schema
     {
