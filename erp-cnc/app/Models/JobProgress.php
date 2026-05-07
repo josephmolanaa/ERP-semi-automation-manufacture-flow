@@ -9,6 +9,14 @@ class JobProgress extends Model
 {
     protected $table = 'job_progress';
 
+    public const TAHAP_LABELS = [
+        'design' => 'Design',
+        'machining' => 'Machining',
+        'assembly' => 'Assembly',
+        'qc' => 'Quality Control',
+        'finishing' => 'Finishing',
+    ];
+
     protected $fillable = [
         'job_order_id', 'operator_id', 'tahap',
         'tanggal', 'catatan', 'foto_paths', 'durasi_menit',
