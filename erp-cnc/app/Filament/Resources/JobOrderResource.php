@@ -152,6 +152,11 @@ class JobOrderResource extends Resource
                     ->form([
                         Select::make('tahap')
                             ->options(JobProgress::TAHAP_LABELS)
+                            ->default(fn (JobOrder $record): string => match ($record->status) {
+                                'pending', 'delayed' => 'design',
+                                'finished' => JobOrder::FINISHING_TAHAP,
+                                default => $record->status,
+                            })
                             ->required(),
 
                         Select::make('operator_id')
@@ -182,6 +187,8 @@ class JobOrderResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->action(function (JobOrder $record, array $data): void {
+                        $data['durasi_menit'] ??= JobProgress::DEFAULT_DURASI_MENIT;
+
                         $record->progresses()->create($data);
                         self::syncStatusFromTahap($record, $data['tahap']);
 
@@ -233,11 +240,14 @@ class JobOrderResource extends Resource
 
     private static function syncStatusFromTahap(JobOrder $record, string $tahap): void
     {
-        $status = $tahap === 'finishing' ? 'finished' : $tahap;
+        $status = JobOrder::statusFromTahap($tahap);
+
         $record->update([
             'status' => $status,
             'progress_persen' => JobOrder::STATUS_PROGRESS[$status] ?? $record->progress_persen,
             'tanggal_selesai' => $status === 'finished' ? today() : null,
         ]);
+
+        $record->po?->syncStatusFromJobs();
     }
 }

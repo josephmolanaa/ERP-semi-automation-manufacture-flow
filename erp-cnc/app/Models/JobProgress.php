@@ -17,6 +17,8 @@ class JobProgress extends Model
         'finishing' => 'Finishing',
     ];
 
+    public const DEFAULT_DURASI_MENIT = 0;
+
     protected $fillable = [
         'job_order_id', 'operator_id', 'tahap',
         'tanggal', 'catatan', 'foto_paths', 'durasi_menit',
@@ -35,5 +37,10 @@ class JobProgress extends Model
     public function operator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'operator_id');
+    }
+
+    public function getTahapLabelAttribute(): string
+    {
+        return self::TAHAP_LABELS[$this->tahap] ?? $this->tahap;
     }
 }
