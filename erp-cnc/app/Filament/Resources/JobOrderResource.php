@@ -85,6 +85,7 @@ class JobOrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['po.customer']))
             ->columns([
                 TextColumn::make('nomor_job')
                     ->label('Nomor Job')
@@ -154,16 +155,21 @@ class JobOrderResource extends Resource
                     ->form([
                         Select::make('tahap')
                             ->options(JobProgress::TAHAP_LABELS)
-                            ->default(fn (JobOrder $record): string => match ($record->status) {
+                            ->default(fn (?JobOrder $record): string => match ($record?->status) {
                                 'pending', 'delayed' => 'design',
                                 'finished' => JobOrder::FINISHING_TAHAP,
-                                default => $record->status,
+                                'machining', 'assembly', 'qc' => $record->status,
+                                default => 'design',
                             })
                             ->required(),
 
                         Select::make('operator_id')
                             ->label('Operator')
-                            ->options(fn (): array => User::query()->orderBy('name')->pluck('name', 'id')->all())
+                            ->options(fn (): array => User::query()
+                                ->orderBy('name')
+                                ->limit(100)
+                                ->pluck('name', 'id')
+                                ->all())
                             ->default(fn () => auth()->id())
                             ->searchable()
                             ->required(),
