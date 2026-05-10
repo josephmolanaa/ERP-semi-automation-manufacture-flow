@@ -6,6 +6,7 @@ use App\Filament\Resources\JobOrderResource\Pages;
 use App\Models\JobProgress;
 use App\Models\JobOrder;
 use App\Models\User;
+use App\Support\FilamentAccess;
 use BackedEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -21,6 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 class JobOrderResource extends Resource
@@ -148,7 +150,7 @@ class JobOrderResource extends Resource
                     ->label('Progress')
                     ->icon('heroicon-o-plus-circle')
                     ->color('success')
-                    ->visible(fn (JobOrder $record): bool => $record->status !== 'finished')
+                    ->visible(fn (JobOrder $record): bool => FilamentAccess::allowed('update_job_progress') && $record->status !== 'finished')
                     ->form([
                         Select::make('tahap')
                             ->options(JobProgress::TAHAP_LABELS)
@@ -236,6 +238,26 @@ class JobOrderResource extends Resource
             'create' => Pages\CreateJobOrder::route('/create'),
             'edit' => Pages\EditJobOrder::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return FilamentAccess::allowed('view_job_order');
+    }
+
+    public static function canCreate(): bool
+    {
+        return FilamentAccess::allowed('create_job_order');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return FilamentAccess::allowed('edit_job_order');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return FilamentAccess::allowed('delete_job_order');
     }
 
     private static function syncStatusFromTahap(JobOrder $record, string $tahap): void

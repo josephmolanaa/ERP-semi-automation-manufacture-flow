@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Invoice;
 use App\Models\SuratJalan;
+use App\Support\FilamentAccess;
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
@@ -20,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use UnitEnum;
 
@@ -212,5 +214,25 @@ class InvoiceResource extends Resource
             'create' => Pages\CreateInvoice::route('/create'),
             'edit' => Pages\EditInvoice::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return FilamentAccess::allowed('view_invoice');
+    }
+
+    public static function canCreate(): bool
+    {
+        return FilamentAccess::allowed('create_invoice');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return FilamentAccess::allowed('edit_invoice');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return FilamentAccess::allowed('delete_invoice');
     }
 }

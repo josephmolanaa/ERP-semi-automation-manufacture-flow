@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SuratJalanResource\Pages;
 use App\Models\JobOrder;
 use App\Models\SuratJalan;
+use App\Support\FilamentAccess;
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
@@ -20,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use UnitEnum;
 
@@ -193,5 +195,25 @@ class SuratJalanResource extends Resource
             'create' => Pages\CreateSuratJalan::route('/create'),
             'edit' => Pages\EditSuratJalan::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return FilamentAccess::allowed('view_surat_jalan');
+    }
+
+    public static function canCreate(): bool
+    {
+        return FilamentAccess::allowed('create_surat_jalan');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return FilamentAccess::allowed('edit_surat_jalan');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return FilamentAccess::allowed('delete_surat_jalan');
     }
 }

@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\QuotationResource\Pages;
 use App\Models\Customer;
 use App\Models\Quotation;
+use App\Support\FilamentAccess;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -22,6 +23,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use UnitEnum;
 
@@ -252,7 +254,7 @@ class QuotationResource extends Resource
                     ->label('Kirim Email')
                     ->icon('heroicon-o-envelope')
                     ->color('info')
-                    ->visible(fn ($record) => in_array($record->status, ['draft', 'sent']))
+                    ->visible(fn ($record) => FilamentAccess::allowed('send_quotation') && in_array($record->status, ['draft', 'sent']))
                     ->requiresConfirmation()
                     ->modalHeading('Kirim Quotation via Email?')
                     ->modalDescription(fn ($record) =>
@@ -289,7 +291,7 @@ class QuotationResource extends Resource
                     ->label('Convert ke PO')
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color('success')
-                    ->visible(fn (Quotation $record): bool => $record->canBeConverted())
+                    ->visible(fn (Quotation $record): bool => FilamentAccess::allowed('convert_quotation') && $record->canBeConverted())
                     ->requiresConfirmation()
                     ->modalHeading('Convert ke Purchase Order?')
                     ->modalDescription('PO dan Job Order akan otomatis dibuat dari quotation ini.')
@@ -344,5 +346,25 @@ class QuotationResource extends Resource
         }
 
         return $query;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return FilamentAccess::allowed('view_quotation');
+    }
+
+    public static function canCreate(): bool
+    {
+        return FilamentAccess::allowed('create_quotation');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return FilamentAccess::allowed('edit_quotation');
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return FilamentAccess::allowed('delete_quotation');
     }
 }
