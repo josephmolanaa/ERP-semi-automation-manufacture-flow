@@ -42,6 +42,13 @@ class JobOrder extends Model
         'delayed'   => 0,
     ];
 
+    public const FINISHING_TAHAP = 'finishing';
+
+    public static function statusFromTahap(string $tahap): string
+    {
+        return $tahap === self::FINISHING_TAHAP ? 'finished' : $tahap;
+    }
+
     public function po(): BelongsTo
     {
         return $this->belongsTo(Po::class);
@@ -81,6 +88,8 @@ class JobOrder extends Model
                 'progress_persen' => self::STATUS_PROGRESS[$newStatus],
                 'tanggal_selesai' => $newStatus === 'finished' ? now() : null,
             ]);
+
+            $this->po?->syncStatusFromJobs();
         }
     }
 }

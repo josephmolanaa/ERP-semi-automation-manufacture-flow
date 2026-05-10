@@ -11,6 +11,12 @@ class SuratJalan extends Model
 {
     use SoftDeletes;
 
+    public const STATUS_LABELS = [
+        'disiapkan' => 'Disiapkan',
+        'dikirim' => 'Dikirim',
+        'diterima' => 'Diterima',
+    ];
+
     protected $fillable = [
         'nomor_sj', 'job_order_id', 'created_by', 'tanggal_kirim',
         'ekspedisi', 'no_resi', 'penerima', 'alamat_kirim',
@@ -47,5 +53,10 @@ class SuratJalan extends Model
 
         $seq = $last ? ((int) substr($last, -4)) + 1 : 1;
         return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+    }
+
+    public function isReceived(): bool
+    {
+        return $this->status === 'diterima';
     }
 }

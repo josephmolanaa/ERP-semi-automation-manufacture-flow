@@ -14,6 +14,14 @@ class Quotation extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const STATUS_LABELS = [
+        'draft' => 'Draft',
+        'sent' => 'Terkirim',
+        'approved' => 'Disetujui',
+        'rejected' => 'Ditolak',
+        'converted' => 'Converted ke PO',
+    ];
+
     protected $fillable = [
         'nomor', 'customer_id', 'created_by', 'tanggal',
         'berlaku_sampai', 'status', 'total_harga',
@@ -86,5 +94,10 @@ class Quotation extends Model
     public function isEditable(): bool
     {
         return in_array($this->status, ['draft', 'sent']);
+    }
+
+    public function canBeConverted(): bool
+    {
+        return $this->status === 'approved' && ! $this->po()->exists();
     }
 }

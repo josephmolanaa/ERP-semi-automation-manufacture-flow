@@ -10,6 +10,12 @@ class Invoice extends Model
 {
     use SoftDeletes;
 
+    public const STATUS_LABELS = [
+        'unpaid' => 'Belum Bayar',
+        'partial' => 'Sebagian',
+        'paid' => 'Lunas',
+    ];
+
     protected $fillable = [
         'nomor_invoice', 'sj_id', 'created_by', 'tanggal',
         'jatuh_tempo', 'total', 'jumlah_bayar', 'status_bayar',
@@ -49,5 +55,14 @@ class Invoice extends Model
     public function getSisaTagihanAttribute(): float
     {
         return $this->total - $this->jumlah_bayar;
+    }
+
+    public static function paymentStatus(float $total, float $paid): string
+    {
+        if ($paid <= 0) {
+            return 'unpaid';
+        }
+
+        return $paid >= $total ? 'paid' : 'partial';
     }
 }

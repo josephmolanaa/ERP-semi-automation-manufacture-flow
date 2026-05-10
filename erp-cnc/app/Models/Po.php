@@ -14,6 +14,13 @@ class Po extends Model
 
     protected $table = 'pos';
 
+    public const STATUS_LABELS = [
+        'pending' => 'Pending',
+        'proses' => 'Proses',
+        'selesai' => 'Selesai',
+        'cancelled' => 'Cancelled',
+    ];
+
     protected $fillable = [
         'nomor_po', 'quotation_id', 'customer_id', 'created_by',
         'tanggal_po', 'estimasi_selesai', 'status', 'total', 'catatan', 'pdf_path',
@@ -60,5 +67,17 @@ class Po extends Model
 
         $seq = $last ? ((int) substr($last, -4)) + 1 : 1;
         return $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT);
+    }
+
+    public function syncStatusFromJobs(): void
+    {
+        if ($this->jobOrders()->where('status', 'finished')->exists()) {
+            $this->update(['status' => 'selesai']);
+            return;
+        }
+
+        if ($this->jobOrders()->whereNotIn('status', ['pending', 'delayed'])->exists()) {
+            $this->update(['status' => 'proses']);
+        }
     }
 }
