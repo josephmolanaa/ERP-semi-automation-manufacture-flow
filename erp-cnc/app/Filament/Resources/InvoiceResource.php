@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InvoiceResource\Pages;
 use App\Models\Invoice;
+use App\Models\SuratJalan;
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
@@ -43,9 +44,30 @@ class InvoiceResource extends Resource
 
                         Select::make('sj_id')
                             ->label('Surat Jalan')
-                            ->relationship('suratJalan', 'nomor_sj')
+                            ->options(fn (?Invoice $record): array => SuratJalan::query()
+                                ->with('jobOrder.po.customer', 'jobOrder.po.quotation')
+                                ->where('status', 'diterima')
+                                ->where(function (Builder $query) use ($record): void {
+                                    $query->whereDoesntHave('invoice');
+
+                                    if ($record?->sj_id) {
+                                        $query->orWhereKey($record->sj_id);
+                                    }
+                                })
+                                ->orderByDesc('tanggal_kirim')
+                                ->get()
+                                ->mapWithKeys(fn (SuratJalan $suratJalan): array => [
+                                    $suratJalan->id => $suratJalan->nomor_sj . ' - ' . ($suratJalan->jobOrder?->po?->customer?->name ?? 'Tanpa customer'),
+                                ])
+                                ->all())
                             ->searchable()
-                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set): void {
+                                $suratJalan = SuratJalan::with('jobOrder.po')->find($state);
+                                $set('total', $suratJalan?->jobOrder?->po?->total ?? 0);
+                                $set('jumlah_bayar', 0);
+                                $set('status_bayar', 'unpaid');
+                            })
                             ->required(),
 
                         DatePicker::make('tanggal')
@@ -66,15 +88,15 @@ class InvoiceResource extends Resource
                             ->numeric()
                             ->prefix('Rp')
                             ->default(0)
+                            ->live(debounce: 500)
+                            ->afterStateUpdated(fn ($state, $set, $get) =>
+                                $set('status_bayar', Invoice::paymentStatus((float) $get('total'), (float) $state))
+                            )
                             ->required(),
 
                         Select::make('status_bayar')
                             ->label('Status Bayar')
-                            ->options([
-                                'unpaid' => 'Belum Bayar',
-                                'partial' => 'Sebagian',
-                                'paid' => 'Lunas',
-                            ])
+                            ->options(Invoice::STATUS_LABELS)
                             ->default('unpaid')
                             ->required(),
 
@@ -156,11 +178,7 @@ class InvoiceResource extends Resource
             ->filters([
                 SelectFilter::make('status_bayar')
                     ->label('Status Bayar')
-                    ->options([
-                        'unpaid' => 'Belum Bayar',
-                        'partial' => 'Sebagian',
-                        'paid' => 'Lunas',
-                    ]),
+                    ->options(Invoice::STATUS_LABELS),
             ])
             ->actions([
                 Tables\Actions\Action::make('uploaded_pdf')

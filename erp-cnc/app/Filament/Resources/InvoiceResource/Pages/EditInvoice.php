@@ -12,6 +12,10 @@ class EditInvoice extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $data['status_bayar'] = \App\Models\Invoice::paymentStatus(
+            (float) ($data['total'] ?? 0),
+            (float) ($data['jumlah_bayar'] ?? 0),
+        );
         $data['paid_at'] = ($data['status_bayar'] ?? null) === 'paid'
             ? ($this->record->paid_at ?? now())
             : null;
