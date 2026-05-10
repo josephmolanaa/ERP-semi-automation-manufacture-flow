@@ -8,6 +8,7 @@ use App\Models\JobOrder;
 use App\Models\User;
 use App\Support\FilamentAccess;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -147,7 +148,7 @@ class JobOrderResource extends Resource
                     ->options(JobOrder::STATUS_LABELS),
             ])
             ->actions([
-                Tables\Actions\Action::make('tambah_progress')
+                Actions\Action::make('tambah_progress')
                     ->label('Progress')
                     ->icon('heroicon-o-plus-circle')
                     ->color('success')
@@ -206,7 +207,7 @@ class JobOrderResource extends Resource
                             ->send();
                     }),
 
-                Tables\Actions\Action::make('advance_status')
+                Actions\Action::make('advance_status')
                     ->label('Lanjut Status')
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color('info')
@@ -221,11 +222,11 @@ class JobOrderResource extends Resource
                             ->send();
                     }),
 
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

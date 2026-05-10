@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\SuratJalan;
 use App\Support\FilamentAccess;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\DatePicker;
@@ -183,7 +184,7 @@ class InvoiceResource extends Resource
                     ->options(Invoice::STATUS_LABELS),
             ])
             ->actions([
-                Tables\Actions\Action::make('uploaded_pdf')
+                Actions\Action::make('uploaded_pdf')
                     ->label('PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('gray')
@@ -191,11 +192,11 @@ class InvoiceResource extends Resource
                     ->url(fn ($record): string => Storage::disk('public')->url($record->pdf_path))
                     ->openUrlInNewTab(),
 
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

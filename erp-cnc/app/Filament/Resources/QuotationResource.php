@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Quotation;
 use App\Support\FilamentAccess;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -247,10 +248,10 @@ class QuotationResource extends Resource
                     ->query(fn (Builder $q) => $q->whereMonth('tanggal', now()->month)),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
 
                 // ── Action: Kirim Email ──────────────────────────────────
-                Tables\Actions\Action::make('kirim_email')
+                Actions\Action::make('kirim_email')
                     ->label('Kirim Email')
                     ->icon('heroicon-o-envelope')
                     ->color('info')
@@ -271,7 +272,7 @@ class QuotationResource extends Resource
                     }),
 
                 // ── Action: Download PDF ─────────────────────────────────
-                Tables\Actions\Action::make('uploaded_pdf')
+                Actions\Action::make('uploaded_pdf')
                     ->label('PDF Upload')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('gray')
@@ -279,7 +280,7 @@ class QuotationResource extends Resource
                     ->url(fn ($record): string => Storage::disk('public')->url($record->pdf_path))
                     ->openUrlInNewTab(),
 
-                Tables\Actions\Action::make('download_pdf')
+                Actions\Action::make('download_pdf')
                     ->label('PDF Generate')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
@@ -287,7 +288,7 @@ class QuotationResource extends Resource
                     ->openUrlInNewTab(),
 
                 // ── Action: Convert to PO ────────────────────────────────
-                Tables\Actions\Action::make('convert_to_po')
+                Actions\Action::make('convert_to_po')
                     ->label('Convert ke PO')
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color('success')
@@ -314,8 +315,8 @@ class QuotationResource extends Resource
                     }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

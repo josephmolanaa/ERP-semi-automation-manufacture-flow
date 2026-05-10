@@ -7,6 +7,7 @@ use App\Models\JobOrder;
 use App\Models\SuratJalan;
 use App\Support\FilamentAccess;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\DatePicker;
@@ -164,7 +165,7 @@ class SuratJalanResource extends Resource
                     ->options(SuratJalan::STATUS_LABELS),
             ])
             ->actions([
-                Tables\Actions\Action::make('uploaded_pdf')
+                Actions\Action::make('uploaded_pdf')
                     ->label('PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('gray')
@@ -172,11 +173,11 @@ class SuratJalanResource extends Resource
                     ->url(fn ($record): string => Storage::disk('public')->url($record->pdf_path))
                     ->openUrlInNewTab(),
 
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
