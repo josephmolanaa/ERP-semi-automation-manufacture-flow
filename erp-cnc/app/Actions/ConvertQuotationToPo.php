@@ -13,13 +13,18 @@ class ConvertQuotationToPo
     public function execute(Quotation $quotation): Po
     {
         return DB::transaction(function () use ($quotation) {
+            $quotation->refresh();
+
+            if (! $quotation->canBeConverted()) {
+                throw new \RuntimeException('Quotation sudah pernah dikonversi atau belum disetujui.');
+            }
 
             // 1. Buat PO dari Quotation
             $po = Po::create([
                 'nomor_po'         => Po::generateNomor(),
                 'quotation_id'     => $quotation->id,
                 'customer_id'      => $quotation->customer_id,
-                'created_by'       => auth()->id(),
+                'created_by'       => auth()->id() ?? $quotation->created_by,
                 'tanggal_po'       => today(),
                 'estimasi_selesai' => today()->addDays(14),
                 'status'           => 'pending',

@@ -55,12 +55,7 @@ class PoResource extends Resource
                             ->preload(),
 
                         Select::make('status')
-                            ->options([
-                                'pending' => 'Pending',
-                                'proses' => 'Proses',
-                                'selesai' => 'Selesai',
-                                'cancelled' => 'Cancelled',
-                            ])
+                            ->options(Po::STATUS_LABELS)
                             ->default('pending')
                             ->required(),
 
@@ -153,12 +148,7 @@ class PoResource extends Resource
             ->defaultSort('tanggal_po', 'desc')
             ->filters([
                 SelectFilter::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'proses' => 'Proses',
-                        'selesai' => 'Selesai',
-                        'cancelled' => 'Cancelled',
-                    ]),
+                    ->options(Po::STATUS_LABELS),
             ])
             ->actions([
                 Tables\Actions\Action::make('uploaded_pdf')
