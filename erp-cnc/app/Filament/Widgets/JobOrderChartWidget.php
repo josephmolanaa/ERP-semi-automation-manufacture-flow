@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\JobOrder;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
 
 class JobOrderChartWidget extends ChartWidget
 {
@@ -13,12 +14,22 @@ class JobOrderChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $statuses = ['pending', 'design', 'machining', 'assembly', 'qc', 'finished', 'delayed'];
-        $counts   = [];
+        return Cache::remember('filament.job_order_chart', now()->addMinute(), fn (): array => $this->buildData());
+    }
 
-        foreach ($statuses as $status) {
-            $counts[] = JobOrder::where('status', $status)->count();
-        }
+    protected function buildData(): array
+    {
+        $statuses = ['pending', 'design', 'machining', 'assembly', 'qc', 'finished', 'delayed'];
+        $statusCounts = JobOrder::query()
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->whereIn('status', $statuses)
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $counts = array_map(
+            fn (string $status): int => (int) ($statusCounts[$status] ?? 0),
+            $statuses,
+        );
 
         return [
             'datasets' => [

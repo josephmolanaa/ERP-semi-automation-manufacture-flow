@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\JobOrder;
 use App\Models\Po;
 use App\Models\Quotation;
+use Illuminate\Support\Facades\Cache;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -21,6 +22,11 @@ class CncFlowStatsWidget extends BaseWidget
     }
 
     protected function getStats(): array
+    {
+        return Cache::remember('filament.cnc_flow_stats', now()->addMinute(), fn (): array => $this->buildStats());
+    }
+
+    protected function buildStats(): array
     {
         $bulanIni = now()->startOfMonth();
 
@@ -46,9 +52,9 @@ class CncFlowStatsWidget extends BaseWidget
                        ->sum('total');
 
         // Piutang outstanding
-        $piutang = Invoice::whereIn('status_bayar', ['unpaid', 'partial'])
-            ->get()
-            ->sum(fn (Invoice $invoice): float => $invoice->sisa_tagihan);
+        $piutang = (float) Invoice::whereIn('status_bayar', ['unpaid', 'partial'])
+            ->selectRaw('COALESCE(SUM(total - jumlah_bayar), 0) as outstanding')
+            ->value('outstanding');
 
         return [
             Stat::make('Penawaran Bulan Ini', $quotasiCount)
