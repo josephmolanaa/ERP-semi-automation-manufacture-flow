@@ -18,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -151,13 +152,7 @@ class QuotationResource extends Resource
                         ->required(),
 
                     Select::make('status')
-                        ->options([
-                            'draft'     => 'Draft',
-                            'sent'      => 'Terkirim',
-                            'approved'  => 'Disetujui',
-                            'rejected'  => 'Ditolak',
-                            'converted' => 'Converted ke PO',
-                        ])
+                        ->options(Quotation::STATUS_LABELS)
                         ->default('draft')
                         ->disabled(fn ($record) => $record?->status === 'converted')
                         ->required(),
@@ -222,12 +217,8 @@ class QuotationResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'draft'     => 'Draft',
-                        'sent'      => 'Terkirim',
-                        'approved'  => 'Disetujui',
-                        'rejected'  => 'Ditolak',
                         'converted' => 'Converted',
-                        default     => $state,
+                        default     => Quotation::STATUS_LABELS[$state] ?? $state,
                     }),
 
                 TextColumn::make('total_harga')
@@ -247,13 +238,7 @@ class QuotationResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'draft'     => 'Draft',
-                        'sent'      => 'Terkirim',
-                        'approved'  => 'Disetujui',
-                        'rejected'  => 'Ditolak',
-                        'converted' => 'Converted',
-                    ]),
+                    ->options(Quotation::STATUS_LABELS),
 
                 Tables\Filters\Filter::make('bulan_ini')
                     ->label('Bulan Ini')
@@ -304,13 +289,24 @@ class QuotationResource extends Resource
                     ->label('Convert ke PO')
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color('success')
-                    ->visible(fn ($record) => $record->status === 'approved')
+                    ->visible(fn (Quotation $record): bool => $record->canBeConverted())
                     ->requiresConfirmation()
                     ->modalHeading('Convert ke Purchase Order?')
                     ->modalDescription('PO dan Job Order akan otomatis dibuat dari quotation ini.')
-                    ->action(function ($record) {
+                    ->action(function (Quotation $record) {
+                        if (! $record->canBeConverted()) {
+                            Notification::make()
+                                ->title('Quotation tidak bisa dikonversi')
+                                ->body('Pastikan status sudah disetujui dan belum memiliki PO.')
+                                ->warning()
+                                ->send();
+
+                            return;
+                        }
+
                         app(\App\Actions\ConvertQuotationToPo::class)->execute($record);
-                        \Filament\Notifications\Notification::make()
+
+                        Notification::make()
                             ->title('PO & Job Order berhasil dibuat!')
                             ->success()->send();
                     }),

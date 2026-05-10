@@ -10,6 +10,11 @@ class EditQuotation extends EditRecord
 {
     protected static string $resource = QuotationResource::class;
 
+    protected function afterSave(): void
+    {
+        $this->record->recalculateTotal();
+    }
+
     protected function getHeaderActions(): array
     {
         return [

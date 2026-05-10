@@ -16,6 +16,11 @@ class CreateQuotation extends CreateRecord
         return $data;
     }
 
+    protected function afterCreate(): void
+    {
+        $this->record->recalculateTotal();
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
