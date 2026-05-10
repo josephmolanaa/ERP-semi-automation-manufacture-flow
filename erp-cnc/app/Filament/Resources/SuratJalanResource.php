@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SuratJalanResource\Pages;
+use App\Models\JobOrder;
 use App\Models\SuratJalan;
 use BackedEnum;
 use Filament\Schemas\Schema;
@@ -43,9 +44,28 @@ class SuratJalanResource extends Resource
 
                         Select::make('job_order_id')
                             ->label('Job Order')
-                            ->relationship('jobOrder', 'nomor_job')
+                            ->options(fn (?SuratJalan $record): array => JobOrder::query()
+                                ->with('po.customer')
+                                ->where('status', 'finished')
+                                ->where(function (Builder $query) use ($record): void {
+                                    $query->whereDoesntHave('suratJalan');
+
+                                    if ($record?->job_order_id) {
+                                        $query->orWhereKey($record->job_order_id);
+                                    }
+                                })
+                                ->orderByDesc('updated_at')
+                                ->get()
+                                ->mapWithKeys(fn (JobOrder $jobOrder): array => [
+                                    $jobOrder->id => $jobOrder->nomor_job . ' - ' . ($jobOrder->po?->customer?->name ?? 'Tanpa customer'),
+                                ])
+                                ->all())
                             ->searchable()
-                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set): void {
+                                $jobOrder = JobOrder::with('po.customer')->find($state);
+                                $set('alamat_kirim', $jobOrder?->po?->customer?->address);
+                            })
                             ->required(),
 
                         DatePicker::make('tanggal_kirim')
@@ -54,11 +74,7 @@ class SuratJalanResource extends Resource
                             ->required(),
 
                         Select::make('status')
-                            ->options([
-                                'disiapkan' => 'Disiapkan',
-                                'dikirim' => 'Dikirim',
-                                'diterima' => 'Diterima',
-                            ])
+                            ->options(SuratJalan::STATUS_LABELS)
                             ->default('disiapkan')
                             ->required(),
 
@@ -143,11 +159,7 @@ class SuratJalanResource extends Resource
             ->defaultSort('tanggal_kirim', 'desc')
             ->filters([
                 SelectFilter::make('status')
-                    ->options([
-                        'disiapkan' => 'Disiapkan',
-                        'dikirim' => 'Dikirim',
-                        'diterima' => 'Diterima',
-                    ]),
+                    ->options(SuratJalan::STATUS_LABELS),
             ])
             ->actions([
                 Tables\Actions\Action::make('uploaded_pdf')

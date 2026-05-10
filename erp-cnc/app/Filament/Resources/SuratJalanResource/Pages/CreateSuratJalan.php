@@ -12,6 +12,7 @@ class CreateSuratJalan extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['created_by'] = auth()->id();
+        $data['diterima_at'] = ($data['status'] ?? null) === 'diterima' ? now() : null;
 
         return $data;
     }
