@@ -95,6 +95,7 @@ class PoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['customer', 'quotation', 'createdBy']))
             ->columns([
                 TextColumn::make('nomor_po')
                     ->label('Nomor PO')

@@ -186,6 +186,7 @@ class QuotationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['customer', 'createdBy']))
             ->columns([
                 TextColumn::make('nomor')
                     ->searchable()

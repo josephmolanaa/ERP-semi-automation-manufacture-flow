@@ -114,6 +114,7 @@ class SuratJalanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('jobOrder'))
             ->columns([
                 TextColumn::make('nomor_sj')
                     ->label('Nomor SJ')

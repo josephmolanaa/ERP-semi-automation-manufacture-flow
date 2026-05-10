@@ -1,21 +1,16 @@
 <?php
 
 use App\Http\Controllers\QuotationApprovalController;
-use App\Models\Quotation;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\HealthController;
+use App\Http\Controllers\QuotationPdfController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/health', fn () => response()->json(['status' => 'ok']));
+Route::get('/health', HealthController::class);
 
 Route::redirect('/', '/admin');
 
 Route::get('/quotation/approve/{token}', [QuotationApprovalController::class, 'approve'])
     ->name('quotation.approve');
 
-Route::get('/quotation/{quotation}/pdf', function (Quotation $quotation) {
-    return Pdf::loadView('pdf.quotation', [
-        'quotation' => $quotation,
-        'items' => $quotation->items,
-        'customer' => $quotation->customer,
-    ])->stream("Penawaran-{$quotation->nomor}.pdf");
-})->name('quotation.pdf');
+Route::get('/quotation/{quotation}/pdf', QuotationPdfController::class)
+    ->name('quotation.pdf');

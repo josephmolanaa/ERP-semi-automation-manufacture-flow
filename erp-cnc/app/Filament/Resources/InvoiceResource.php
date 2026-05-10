@@ -122,6 +122,7 @@ class InvoiceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['suratJalan', 'createdBy']))
             ->columns([
                 TextColumn::make('nomor_invoice')
                     ->label('Nomor Invoice')
