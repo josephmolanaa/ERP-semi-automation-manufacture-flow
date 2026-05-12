@@ -177,7 +177,80 @@ class QuotationResource extends Resource
                         ->acceptedFileTypes(['application/pdf'])
                         ->preserveFilenames()
                         ->downloadable()
-                        ->openable(),
+                        ->openable()
+                        ->live()
+                        ->afterStateUpdated(function ($state, $set, $get, $livewire) {
+                            if (!$state) {
+                                return;
+                            }
+
+                            try {
+                                // Get uploaded file
+                                $file = is_array($state) ? reset($state) : $state;
+                                
+                                if (!$file) {
+                                    return;
+                                }
+
+                                // Parse PDF
+                                $parser = app(\App\Services\Parsers\QuotationPdfParser::class);
+                                $data = $parser->parse($file);
+
+                                if (!$data['success']) {
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Gagal parse PDF')
+                                        ->body($data['error'] ?? 'Unknown error')
+                                        ->warning()
+                                        ->send();
+                                    return;
+                                }
+
+                                // Auto-fill customer if found
+                                if (!empty($data['customer']['name'])) {
+                                    // Try to find existing customer
+                                    $customer = \App\Models\Customer::where('name', 'like', '%' . $data['customer']['name'] . '%')
+                                        ->orWhere('company', 'like', '%' . $data['customer']['company'] . '%')
+                                        ->first();
+
+                                    if ($customer) {
+                                        $set('customer_id', $customer->id);
+                                    }
+                                }
+
+                                // Auto-fill dates
+                                if ($data['tanggal']) {
+                                    $set('tanggal', $data['tanggal']);
+                                }
+                                if ($data['berlaku_sampai']) {
+                                    $set('berlaku_sampai', $data['berlaku_sampai']);
+                                }
+
+                                // Auto-fill notes
+                                if ($data['catatan']) {
+                                    $set('catatan', $data['catatan']);
+                                }
+
+                                // Auto-fill items
+                                if (!empty($data['items'])) {
+                                    $set('items', $data['items']);
+                                }
+
+                                \Filament\Notifications\Notification::make()
+                                    ->title('PDF berhasil di-parse!')
+                                    ->body('Data otomatis terisi dari PDF. Silakan review dan sesuaikan jika perlu.')
+                                    ->success()
+                                    ->send();
+
+                            } catch (\Exception $e) {
+                                \Illuminate\Support\Facades\Log::error('PDF Auto-fill Error: ' . $e->getMessage());
+                                
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Error saat parse PDF')
+                                    ->body('Silakan isi form secara manual.')
+                                    ->warning()
+                                    ->send();
+                            }
+                        }),
                 ])
             ])->columnSpan(['lg' => 1]),
         ])->columns(3);

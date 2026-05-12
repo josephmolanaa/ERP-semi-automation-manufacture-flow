@@ -83,7 +83,78 @@ class PoResource extends Resource
                             ->acceptedFileTypes(['application/pdf'])
                             ->preserveFilenames()
                             ->downloadable()
-                            ->openable(),
+                            ->openable()
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                if (!$state) {
+                                    return;
+                                }
+
+                                try {
+                                    $file = is_array($state) ? reset($state) : $state;
+                                    
+                                    if (!$file) {
+                                        return;
+                                    }
+
+                                    // Parse PDF
+                                    $parser = app(\App\Services\Parsers\PoPdfParser::class);
+                                    $data = $parser->parse($file);
+
+                                    if (!$data['success']) {
+                                        \Filament\Notifications\Notification::make()
+                                            ->title('Gagal parse PDF')
+                                            ->body($data['error'] ?? 'Unknown error')
+                                            ->warning()
+                                            ->send();
+                                        return;
+                                    }
+
+                                    // Auto-fill customer if found
+                                    if (!empty($data['customer']['name'])) {
+                                        $customer = \App\Models\Customer::where('name', 'like', '%' . $data['customer']['name'] . '%')
+                                            ->orWhere('company', 'like', '%' . $data['customer']['company'] . '%')
+                                            ->first();
+
+                                        if ($customer) {
+                                            $set('customer_id', $customer->id);
+                                        }
+                                    }
+
+                                    // Auto-fill dates
+                                    if ($data['tanggal_po']) {
+                                        $set('tanggal_po', $data['tanggal_po']);
+                                    }
+                                    if ($data['estimasi_selesai']) {
+                                        $set('estimasi_selesai', $data['estimasi_selesai']);
+                                    }
+
+                                    // Auto-fill total
+                                    if ($data['total']) {
+                                        $set('total', $data['total']);
+                                    }
+
+                                    // Auto-fill notes
+                                    if ($data['catatan']) {
+                                        $set('catatan', $data['catatan']);
+                                    }
+
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('PDF berhasil di-parse!')
+                                        ->body('Data otomatis terisi dari PDF.')
+                                        ->success()
+                                        ->send();
+
+                                } catch (\Exception $e) {
+                                    \Illuminate\Support\Facades\Log::error('PO PDF Auto-fill Error: ' . $e->getMessage());
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Error saat parse PDF')
+                                        ->body('Silakan isi form secara manual.')
+                                        ->warning()
+                                        ->send();
+                                }
+                            }),
 
                         Textarea::make('catatan')
                             ->columnSpanFull(),

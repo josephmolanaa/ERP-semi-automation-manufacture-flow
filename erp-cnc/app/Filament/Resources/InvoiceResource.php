@@ -110,7 +110,67 @@ class InvoiceResource extends Resource
                             ->acceptedFileTypes(['application/pdf'])
                             ->preserveFilenames()
                             ->downloadable()
-                            ->openable(),
+                            ->openable()
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                if (!$state) {
+                                    return;
+                                }
+
+                                try {
+                                    $file = is_array($state) ? reset($state) : $state;
+                                    
+                                    if (!$file) {
+                                        return;
+                                    }
+
+                                    // Parse PDF
+                                    $parser = app(\App\Services\Parsers\InvoicePdfParser::class);
+                                    $data = $parser->parse($file);
+
+                                    if (!$data['success']) {
+                                        \Filament\Notifications\Notification::make()
+                                            ->title('Gagal parse PDF')
+                                            ->body($data['error'] ?? 'Unknown error')
+                                            ->warning()
+                                            ->send();
+                                        return;
+                                    }
+
+                                    // Auto-fill dates
+                                    if ($data['tanggal']) {
+                                        $set('tanggal', $data['tanggal']);
+                                    }
+                                    if ($data['jatuh_tempo']) {
+                                        $set('jatuh_tempo', $data['jatuh_tempo']);
+                                    }
+
+                                    // Auto-fill total
+                                    if ($data['total']) {
+                                        $set('total', $data['total']);
+                                    }
+
+                                    // Auto-fill notes
+                                    if ($data['catatan']) {
+                                        $set('catatan', $data['catatan']);
+                                    }
+
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('PDF berhasil di-parse!')
+                                        ->body('Data otomatis terisi dari PDF.')
+                                        ->success()
+                                        ->send();
+
+                                } catch (\Exception $e) {
+                                    \Illuminate\Support\Facades\Log::error('Invoice PDF Auto-fill Error: ' . $e->getMessage());
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Error saat parse PDF')
+                                        ->body('Silakan isi form secara manual.')
+                                        ->warning()
+                                        ->send();
+                                }
+                            }),
 
                         Textarea::make('catatan')
                             ->columnSpanFull(),
