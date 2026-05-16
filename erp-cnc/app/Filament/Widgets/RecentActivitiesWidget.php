@@ -15,6 +15,7 @@ class RecentActivitiesWidget extends BaseWidget
 {
     protected static ?int $sort = 5;
     protected int | string | array $columnSpan = 'full';
+    protected static ?string $pollingInterval = '120s';
 
     public function table(Table $table): Table
     {
@@ -23,6 +24,7 @@ class RecentActivitiesWidget extends BaseWidget
             ->query(
                 Quotation::query()
                     ->with(['customer', 'createdBy'])
+                    ->select(['id', 'nomor', 'customer_id', 'created_by', 'status', 'total_harga', 'tanggal', 'created_at'])
                     ->latest()
                     ->limit(10)
             )

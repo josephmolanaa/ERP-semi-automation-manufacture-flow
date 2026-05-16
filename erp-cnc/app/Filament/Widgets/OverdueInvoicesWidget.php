@@ -11,6 +11,7 @@ class OverdueInvoicesWidget extends BaseWidget
 {
     protected static ?int $sort = 6;
     protected int | string | array $columnSpan = 'full';
+    protected static ?string $pollingInterval = '120s';
 
     public function table(Table $table): Table
     {
@@ -19,8 +20,9 @@ class OverdueInvoicesWidget extends BaseWidget
             ->query(
                 Invoice::query()
                     ->with(['suratJalan.jobOrder.po.customer', 'createdBy'])
+                    ->select(['id', 'nomor_invoice', 'sj_id', 'created_by', 'total', 'jumlah_bayar', 'jatuh_tempo', 'status_bayar'])
                     ->whereIn('status_bayar', ['unpaid', 'partial'])
-                    ->where('jatuh_tempo', '<', now())
+                    ->where('jatuh_tempo', '<', today()->toDateString())
                     ->orderBy('jatuh_tempo', 'asc')
             )
             ->columns([
