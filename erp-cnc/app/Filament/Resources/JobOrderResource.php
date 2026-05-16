@@ -49,7 +49,6 @@ class JobOrderResource extends Resource
                             ->label('PO')
                             ->relationship('po', 'nomor_po')
                             ->searchable()
-                            ->preload()
                             ->required(),
 
                         Select::make('status')

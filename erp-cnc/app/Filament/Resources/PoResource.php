@@ -48,14 +48,12 @@ class PoResource extends Resource
                             ->label('Customer')
                             ->relationship('customer', 'name')
                             ->searchable()
-                            ->preload()
                             ->required(),
 
                         Select::make('quotation_id')
                             ->label('Quotation')
                             ->relationship('quotation', 'nomor')
-                            ->searchable()
-                            ->preload(),
+                            ->searchable(),
 
                         Select::make('status')
                             ->options(Po::STATUS_LABELS)

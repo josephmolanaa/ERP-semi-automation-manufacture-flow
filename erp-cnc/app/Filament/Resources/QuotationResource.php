@@ -54,7 +54,6 @@ class QuotationResource extends Resource
                         ->label('Customer')
                         ->relationship('customer', 'name')
                         ->searchable()
-                        ->preload()
                         ->required()
                         ->createOptionForm([
                             TextInput::make('name')->required(),
@@ -319,7 +318,10 @@ class QuotationResource extends Resource
 
                 Tables\Filters\Filter::make('bulan_ini')
                     ->label('Bulan Ini')
-                    ->query(fn (Builder $q) => $q->whereMonth('tanggal', now()->month)),
+                    ->query(fn (Builder $q) => $q->whereBetween('tanggal', [
+                        now()->startOfMonth()->toDateString(),
+                        now()->endOfMonth()->toDateString(),
+                    ])),
             ])
             ->actions([
                 Actions\EditAction::make(),
