@@ -47,22 +47,29 @@ class SuratJalanResource extends Resource
 
                         Select::make('job_order_id')
                             ->label('Job Order')
-                            ->options(fn (?SuratJalan $record): array => JobOrder::query()
+                            ->getSearchResultsUsing(fn (string $search): array => JobOrder::query()
                                 ->with('po.customer')
                                 ->where('status', 'finished')
-                                ->where(function (Builder $query) use ($record): void {
-                                    $query->whereDoesntHave('suratJalan');
-
-                                    if ($record?->job_order_id) {
-                                        $query->orWhereKey($record->job_order_id);
-                                    }
+                                ->whereDoesntHave('suratJalan')
+                                ->where(function (Builder $query) use ($search): void {
+                                    $query
+                                        ->where('nomor_job', 'like', "%{$search}%")
+                                        ->orWhereHas('po.customer', fn (Builder $query): Builder => $query->where('name', 'like', "%{$search}%"));
                                 })
                                 ->orderByDesc('updated_at')
+                                ->limit(50)
                                 ->get()
                                 ->mapWithKeys(fn (JobOrder $jobOrder): array => [
                                     $jobOrder->id => $jobOrder->nomor_job . ' - ' . ($jobOrder->po?->customer?->name ?? 'Tanpa customer'),
                                 ])
                                 ->all())
+                            ->getOptionLabelUsing(function ($value): ?string {
+                                $jobOrder = JobOrder::with('po.customer')->find($value);
+
+                                return $jobOrder
+                                    ? $jobOrder->nomor_job . ' - ' . ($jobOrder->po?->customer?->name ?? 'Tanpa customer')
+                                    : null;
+                            })
                             ->searchable()
                             ->live()
                             ->afterStateUpdated(function ($state, $set): void {

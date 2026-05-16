@@ -47,22 +47,30 @@ class InvoiceResource extends Resource
 
                         Select::make('sj_id')
                             ->label('Surat Jalan')
-                            ->options(fn (?Invoice $record): array => SuratJalan::query()
-                                ->with('jobOrder.po.customer', 'jobOrder.po.quotation')
+                            ->getSearchResultsUsing(fn (string $search): array => SuratJalan::query()
+                                ->with('jobOrder.po.customer')
                                 ->where('status', 'diterima')
-                                ->where(function (Builder $query) use ($record): void {
-                                    $query->whereDoesntHave('invoice');
-
-                                    if ($record?->sj_id) {
-                                        $query->orWhereKey($record->sj_id);
-                                    }
+                                ->whereDoesntHave('invoice')
+                                ->where(function (Builder $query) use ($search): void {
+                                    $query
+                                        ->where('nomor_sj', 'like', "%{$search}%")
+                                        ->orWhereHas('jobOrder', fn (Builder $query): Builder => $query->where('nomor_job', 'like', "%{$search}%"))
+                                        ->orWhereHas('jobOrder.po.customer', fn (Builder $query): Builder => $query->where('name', 'like', "%{$search}%"));
                                 })
                                 ->orderByDesc('tanggal_kirim')
+                                ->limit(50)
                                 ->get()
                                 ->mapWithKeys(fn (SuratJalan $suratJalan): array => [
                                     $suratJalan->id => $suratJalan->nomor_sj . ' - ' . ($suratJalan->jobOrder?->po?->customer?->name ?? 'Tanpa customer'),
                                 ])
                                 ->all())
+                            ->getOptionLabelUsing(function ($value): ?string {
+                                $suratJalan = SuratJalan::with('jobOrder.po.customer')->find($value);
+
+                                return $suratJalan
+                                    ? $suratJalan->nomor_sj . ' - ' . ($suratJalan->jobOrder?->po?->customer?->name ?? 'Tanpa customer')
+                                    : null;
+                            })
                             ->searchable()
                             ->live()
                             ->afterStateUpdated(function ($state, $set): void {
