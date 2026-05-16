@@ -3,29 +3,35 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Quotation;
-use App\Models\Po;
 use App\Models\JobOrder;
 use App\Models\Invoice;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
 
 class StatsOverviewWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+    protected static ?string $pollingInterval = '120s';
 
     protected function getStats(): array
     {
-        $currentMonth = now()->month;
-        $currentYear = now()->year;
+        return Cache::remember('filament.legacy_stats_overview', now()->addMinutes(5), fn (): array => $this->buildStats());
+    }
+
+    protected function buildStats(): array
+    {
+        $currentMonthStart = now()->startOfMonth()->toDateString();
+        $currentMonthEnd = now()->endOfMonth()->toDateString();
+        $lastMonthStart = now()->subMonth()->startOfMonth()->toDateString();
+        $lastMonthEnd = now()->subMonth()->endOfMonth()->toDateString();
 
         // Quotations stats
-        $totalQuotations = Quotation::whereYear('tanggal', $currentYear)
-            ->whereMonth('tanggal', $currentMonth)
+        $totalQuotations = Quotation::whereBetween('tanggal', [$currentMonthStart, $currentMonthEnd])
             ->count();
         
         $approvedQuotations = Quotation::where('status', 'approved')
-            ->whereYear('tanggal', $currentYear)
-            ->whereMonth('tanggal', $currentMonth)
+            ->whereBetween('tanggal', [$currentMonthStart, $currentMonthEnd])
             ->count();
 
         $conversionRate = $totalQuotations > 0 
@@ -34,13 +40,11 @@ class StatsOverviewWidget extends BaseWidget
 
         // Revenue stats
         $currentRevenue = Invoice::where('status_bayar', 'paid')
-            ->whereYear('tanggal', $currentYear)
-            ->whereMonth('tanggal', $currentMonth)
+            ->whereBetween('tanggal', [$currentMonthStart, $currentMonthEnd])
             ->sum('total');
 
         $lastMonthRevenue = Invoice::where('status_bayar', 'paid')
-            ->whereYear('tanggal', $currentYear)
-            ->whereMonth('tanggal', $currentMonth - 1)
+            ->whereBetween('tanggal', [$lastMonthStart, $lastMonthEnd])
             ->sum('total');
 
         $revenueChange = $lastMonthRevenue > 0
@@ -52,8 +56,7 @@ class StatsOverviewWidget extends BaseWidget
             ->count();
 
         $finishedJobs = JobOrder::where('status', 'finished')
-            ->whereYear('created_at', $currentYear)
-            ->whereMonth('created_at', $currentMonth)
+            ->whereBetween('created_at', [$currentMonthStart, now()->endOfMonth()])
             ->count();
 
         // Outstanding invoices
@@ -61,7 +64,7 @@ class StatsOverviewWidget extends BaseWidget
             ->sum('total');
 
         $overdueInvoices = Invoice::whereIn('status_bayar', ['unpaid', 'partial'])
-            ->where('jatuh_tempo', '<', now())
+            ->where('jatuh_tempo', '<', today()->toDateString())
             ->count();
 
         return [
