@@ -11,10 +11,11 @@ class JobOrderChartWidget extends ChartWidget
 {
     protected ?string $heading = 'Status Job Order';
     protected static ?int $sort = 2;
+    protected static ?string $pollingInterval = '120s';
 
     protected function getData(): array
     {
-        return Cache::remember('filament.job_order_chart', now()->addMinute(), fn (): array => $this->buildData());
+        return Cache::remember('filament.job_order_chart', now()->addMinutes(5), fn (): array => $this->buildData());
     }
 
     protected function buildData(): array

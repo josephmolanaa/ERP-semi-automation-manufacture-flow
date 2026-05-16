@@ -5,17 +5,26 @@ namespace App\Filament\Widgets;
 use App\Models\Invoice;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class RevenueChartWidget extends ChartWidget
 {
     protected static ?string $heading = 'Revenue Trend (6 Bulan Terakhir)';
     protected static ?int $sort = 2;
     protected static ?string $maxHeight = '300px';
+    protected static ?string $pollingInterval = '120s';
 
     protected function getData(): array
     {
+        return Cache::remember('filament.revenue_chart', now()->addMinutes(5), fn (): array => $this->buildData());
+    }
+
+    protected function buildData(): array
+    {
+        $startDate = now()->subMonths(5)->startOfMonth()->toDateString();
+
         $data = Invoice::where('status_bayar', 'paid')
-            ->where('tanggal', '>=', now()->subMonths(6))
+            ->where('tanggal', '>=', $startDate)
             ->select(
                 DB::raw('YEAR(tanggal) as year'),
                 DB::raw('MONTH(tanggal) as month'),
