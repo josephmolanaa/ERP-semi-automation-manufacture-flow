@@ -15,6 +15,7 @@ class CncFlowStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
     protected int | string | array $columnSpan = 'full';
+    protected static ?string $pollingInterval = '120s';
 
     protected function getColumns(): int
     {
@@ -23,38 +24,51 @@ class CncFlowStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        return Cache::remember('filament.cnc_flow_stats', now()->addMinute(), fn (): array => $this->buildStats());
+        return Cache::remember('filament.cnc_flow_stats', now()->addMinutes(5), fn (): array => $this->buildStats());
     }
 
     protected function buildStats(): array
     {
-        $bulanIni = now()->startOfMonth();
+        $monthStart = now()->startOfMonth()->toDateString();
+        $monthEnd = now()->endOfMonth()->toDateString();
+        $today = today()->toDateString();
 
-        // Quotation bulan ini
-        $quotasiCount  = Quotation::where('tanggal', '>=', $bulanIni)->count();
-        $quotasiValue  = Quotation::where('tanggal', '>=', $bulanIni)->sum('total_harga');
+        $quotationSummary = Quotation::query()
+            ->whereBetween('tanggal', [$monthStart, $monthEnd])
+            ->selectRaw('COUNT(*) as aggregate_count, COALESCE(SUM(total_harga), 0) as aggregate_total')
+            ->first();
 
-        // PO masuk bulan ini
-        $poCount       = Po::where('tanggal_po', '>=', $bulanIni)->count();
-        $poValue       = Po::where('tanggal_po', '>=', $bulanIni)->sum('total');
+        $poSummary = Po::query()
+            ->whereBetween('tanggal_po', [$monthStart, $monthEnd])
+            ->selectRaw('COUNT(*) as aggregate_count, COALESCE(SUM(total), 0) as aggregate_total')
+            ->first();
 
-        // Job Order aktif
-        $jobPending    = JobOrder::whereIn('status', ['pending', 'design', 'machining', 'assembly', 'qc'])->count();
-        $jobDelayed    = JobOrder::where('status', 'delayed')
-                            ->orWhere(function ($q) {
-                                $q->whereNotIn('status', ['finished'])
-                                  ->where('estimasi_selesai', '<', today());
-                            })->count();
+        $jobSummary = JobOrder::query()
+            ->selectRaw(
+                "SUM(CASE WHEN status IN ('pending', 'design', 'machining', 'assembly', 'qc') THEN 1 ELSE 0 END) as active_count"
+            )
+            ->selectRaw(
+                "SUM(CASE WHEN status = 'delayed' OR (status <> 'finished' AND estimasi_selesai < ?) THEN 1 ELSE 0 END) as delayed_count",
+                [$today],
+            )
+            ->first();
 
-        // Revenue bulan ini (invoice paid)
-        $revenue = Invoice::where('status_bayar', 'paid')
-                       ->where('tanggal', '>=', $bulanIni)
-                       ->sum('total');
+        $revenue = Invoice::query()
+            ->where('status_bayar', 'paid')
+            ->whereBetween('tanggal', [$monthStart, $monthEnd])
+            ->sum('total');
 
-        // Piutang outstanding
-        $piutang = (float) Invoice::whereIn('status_bayar', ['unpaid', 'partial'])
+        $piutang = (float) Invoice::query()
+            ->whereIn('status_bayar', ['unpaid', 'partial'])
             ->selectRaw('COALESCE(SUM(total - jumlah_bayar), 0) as outstanding')
             ->value('outstanding');
+
+        $quotasiCount = (int) ($quotationSummary->aggregate_count ?? 0);
+        $quotasiValue = (float) ($quotationSummary->aggregate_total ?? 0);
+        $poCount = (int) ($poSummary->aggregate_count ?? 0);
+        $poValue = (float) ($poSummary->aggregate_total ?? 0);
+        $jobPending = (int) ($jobSummary->active_count ?? 0);
+        $jobDelayed = (int) ($jobSummary->delayed_count ?? 0);
 
         return [
             Stat::make('Penawaran Bulan Ini', $quotasiCount)
