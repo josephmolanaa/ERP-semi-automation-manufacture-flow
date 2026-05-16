@@ -11,7 +11,7 @@ class OverdueInvoicesWidget extends BaseWidget
 {
     protected static ?int $sort = 6;
     protected int | string | array $columnSpan = 'full';
-    protected static ?string $pollingInterval = '120s';
+    protected ?string $pollingInterval = '120s';
 
     public function table(Table $table): Table
     {
