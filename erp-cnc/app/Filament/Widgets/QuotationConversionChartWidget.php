@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class QuotationConversionChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Quotation Conversion Rate (6 Bulan)';
+    protected ?string $heading = 'Quotation Conversion Rate (6 Bulan)';
     protected static ?int $sort = 4;
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
     protected ?string $pollingInterval = '120s';
 
     protected function getData(): array

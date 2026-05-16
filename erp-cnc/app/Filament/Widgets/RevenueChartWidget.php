@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Cache;
 
 class RevenueChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Revenue Trend (6 Bulan Terakhir)';
+    protected ?string $heading = 'Revenue Trend (6 Bulan Terakhir)';
     protected static ?int $sort = 2;
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
     protected ?string $pollingInterval = '120s';
 
     protected function getData(): array
