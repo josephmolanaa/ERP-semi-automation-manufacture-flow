@@ -11,7 +11,7 @@ class JobOrderChartWidget extends ChartWidget
 {
     protected ?string $heading = 'Status Job Order';
     protected static ?int $sort = 2;
-    protected ?string $pollingInterval = '120s';
+    protected ?string $pollingInterval = null;
 
     protected function getData(): array
     {

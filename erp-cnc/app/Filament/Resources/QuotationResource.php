@@ -323,6 +323,8 @@ class QuotationResource extends Resource
                         now()->endOfMonth()->toDateString(),
                     ])),
             ])
+            ->paginated([10, 25, 50])
+            ->defaultPaginationPageOption(10)
             ->actions([
                 Actions\EditAction::make(),
 

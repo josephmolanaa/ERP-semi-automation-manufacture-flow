@@ -146,6 +146,8 @@ class JobOrderResource extends Resource
                 SelectFilter::make('status')
                     ->options(JobOrder::STATUS_LABELS),
             ])
+            ->paginated([10, 25, 50])
+            ->defaultPaginationPageOption(10)
             ->actions([
                 Actions\Action::make('tambah_progress')
                     ->label('Progress')

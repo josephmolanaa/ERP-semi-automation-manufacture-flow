@@ -252,6 +252,8 @@ class InvoiceResource extends Resource
                     ->label('Status Bayar')
                     ->options(Invoice::STATUS_LABELS),
             ])
+            ->paginated([10, 25, 50])
+            ->defaultPaginationPageOption(10)
             ->actions([
                 Actions\Action::make('uploaded_pdf')
                     ->label('PDF')

@@ -12,7 +12,7 @@ class QuotationConversionChartWidget extends ChartWidget
     protected ?string $heading = 'Quotation Conversion Rate (6 Bulan)';
     protected static ?int $sort = 4;
     protected ?string $maxHeight = '300px';
-    protected ?string $pollingInterval = '120s';
+    protected ?string $pollingInterval = null;
 
     protected function getData(): array
     {

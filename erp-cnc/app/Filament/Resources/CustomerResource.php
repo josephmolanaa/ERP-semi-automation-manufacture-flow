@@ -107,6 +107,8 @@ class CustomerResource extends Resource
                 TernaryFilter::make('is_active')
                     ->label('Status Aktif'),
             ])
+            ->paginated([10, 25, 50])
+            ->defaultPaginationPageOption(10)
             ->actions([
                 Actions\EditAction::make(),
             ])

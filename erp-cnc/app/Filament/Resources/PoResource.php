@@ -225,6 +225,8 @@ class PoResource extends Resource
                 SelectFilter::make('status')
                     ->options(Po::STATUS_LABELS),
             ])
+            ->paginated([10, 25, 50])
+            ->defaultPaginationPageOption(10)
             ->actions([
                 Actions\Action::make('uploaded_pdf')
                     ->label('PDF')

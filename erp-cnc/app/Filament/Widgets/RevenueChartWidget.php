@@ -12,7 +12,7 @@ class RevenueChartWidget extends ChartWidget
     protected ?string $heading = 'Revenue Trend (6 Bulan Terakhir)';
     protected static ?int $sort = 2;
     protected ?string $maxHeight = '300px';
-    protected ?string $pollingInterval = '120s';
+    protected ?string $pollingInterval = null;
 
     protected function getData(): array
     {

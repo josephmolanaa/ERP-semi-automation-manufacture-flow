@@ -111,6 +111,44 @@ html:not(.dark) .fi-dropdown-panel {
     backdrop-filter: blur(16px);
 }
 
+.erp-theme-toggle {
+    display: inline-grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border: 1px solid var(--erp-border-soft);
+    border-radius: 0.625rem;
+    background: var(--erp-surface);
+    color: var(--erp-text-muted);
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.erp-theme-toggle:hover {
+    background: var(--erp-surface-muted);
+    border-color: var(--erp-border);
+    color: var(--erp-text);
+}
+
+.erp-theme-toggle__icon {
+    grid-area: 1 / 1;
+    width: 1.125rem;
+    height: 1.125rem;
+    transition: opacity 150ms ease, transform 150ms ease;
+}
+
+html:not(.dark) .erp-theme-toggle__moon,
+html.dark .erp-theme-toggle__sun {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+
+html:not(.dark) .erp-theme-toggle__sun,
+html.dark .erp-theme-toggle__moon {
+    opacity: 0;
+    transform: scale(0.72) rotate(-20deg);
+}
+
 html:not(.dark) .fi-topbar > nav,
 html:not(.dark) .fi-topbar nav {
     background: color-mix(in srgb, var(--erp-surface) 92%, transparent) !important;

@@ -15,7 +15,7 @@ class RecentActivitiesWidget extends BaseWidget
 {
     protected static ?int $sort = 5;
     protected int | string | array $columnSpan = 'full';
-    protected ?string $pollingInterval = '120s';
+    protected ?string $pollingInterval = null;
 
     public function table(Table $table): Table
     {

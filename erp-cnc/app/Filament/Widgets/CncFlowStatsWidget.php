@@ -15,7 +15,7 @@ class CncFlowStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
     protected int | string | array $columnSpan = 'full';
-    protected ?string $pollingInterval = '120s';
+    protected ?string $pollingInterval = null;
 
     protected function getColumns(): int
     {
