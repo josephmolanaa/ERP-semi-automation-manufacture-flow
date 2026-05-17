@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
 
 class JobOrderStatusChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Job Order Status Distribution';
+    protected ?string $heading = null;
     protected static ?int $sort = 3;
     protected ?string $maxHeight = '300px';
 
@@ -32,7 +32,7 @@ class JobOrderStatusChartWidget extends ChartWidget
         $backgroundColors = [];
 
         foreach ($statuses as $status) {
-            $labels[] = JobOrder::STATUS_LABELS[$status->status] ?? $status->status;
+            $labels[] = __('app.statuses.' . $status->status);
             $data[] = $status->count;
             $backgroundColors[] = $colors[$status->status] ?? '#94a3b8';
         }
@@ -47,6 +47,11 @@ class JobOrderStatusChartWidget extends ChartWidget
             ],
             'labels' => $labels,
         ];
+    }
+
+    protected function getHeading(): ?string
+    {
+        return __('app.dashboard.job_status');
     }
 
     protected function getType(): string

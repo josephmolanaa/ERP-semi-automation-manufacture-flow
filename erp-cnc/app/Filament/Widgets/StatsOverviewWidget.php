@@ -68,13 +68,13 @@ class StatsOverviewWidget extends BaseWidget
             ->count();
 
         return [
-            Stat::make('Quotations Bulan Ini', $totalQuotations)
+            Stat::make(__('app.dashboard.quotations_this_month'), $totalQuotations)
                 ->description("Conversion Rate: {$conversionRate}%")
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color($conversionRate >= 50 ? 'success' : 'warning')
                 ->chart([7, 12, 15, 18, 22, 25, $totalQuotations]),
 
-            Stat::make('Revenue Bulan Ini', 'Rp ' . number_format($currentRevenue, 0, ',', '.'))
+            Stat::make(__('app.dashboard.revenue_this_month'), 'Rp ' . number_format($currentRevenue, 0, ',', '.'))
                 ->description($revenueChange >= 0 ? "+{$revenueChange}% dari bulan lalu" : "{$revenueChange}% dari bulan lalu")
                 ->descriptionIcon($revenueChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($revenueChange >= 0 ? 'success' : 'danger')
@@ -88,13 +88,13 @@ class StatsOverviewWidget extends BaseWidget
                     $currentRevenue
                 ]),
 
-            Stat::make('Job Orders Aktif', $activeJobs)
+            Stat::make(__('app.dashboard.active_jobs'), $activeJobs)
                 ->description("{$finishedJobs} selesai bulan ini")
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('info')
                 ->chart([5, 8, 12, 15, 18, 20, $activeJobs]),
 
-            Stat::make('Outstanding Invoices', 'Rp ' . number_format($outstandingInvoices, 0, ',', '.'))
+            Stat::make(__('app.dashboard.outstanding_receivables'), 'Rp ' . number_format($outstandingInvoices, 0, ',', '.'))
                 ->description($overdueInvoices > 0 ? "{$overdueInvoices} invoice overdue" : 'Semua on-time')
                 ->descriptionIcon($overdueInvoices > 0 ? 'heroicon-m-exclamation-triangle' : 'heroicon-m-check-badge')
                 ->color($overdueInvoices > 0 ? 'danger' : 'success'),

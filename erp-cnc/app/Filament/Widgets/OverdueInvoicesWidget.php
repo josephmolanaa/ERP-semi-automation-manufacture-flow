@@ -16,7 +16,7 @@ class OverdueInvoicesWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->heading('⚠️ Overdue Invoices')
+            ->heading(__('app.dashboard.overdue_invoices'))
             ->query(
                 Invoice::query()
                     ->with(['suratJalan.jobOrder.po.customer', 'createdBy'])
@@ -27,38 +27,38 @@ class OverdueInvoicesWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('nomor_invoice')
-                    ->label('Invoice No')
+                    ->label(__('app.fields.invoice_no'))
                     ->searchable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('suratJalan.jobOrder.po.customer.name')
-                    ->label('Customer')
+                    ->label(__('app.fields.customer'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('total')
-                    ->label('Total')
+                    ->label(__('app.fields.total'))
                     ->money('IDR'),
 
                 Tables\Columns\TextColumn::make('jumlah_bayar')
-                    ->label('Paid')
+                    ->label(__('app.fields.paid'))
                     ->money('IDR'),
 
                 Tables\Columns\TextColumn::make('sisa_tagihan')
-                    ->label('Outstanding')
+                    ->label(__('app.dashboard.outstanding_receivables'))
                     ->money('IDR')
                     ->color('danger')
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('jatuh_tempo')
-                    ->label('Due Date')
+                    ->label(__('app.fields.due_date'))
                     ->date('d M Y')
                     ->color('danger')
-                    ->description(fn ($record) => 
-                        now()->diffInDays($record->jatuh_tempo) . ' hari terlambat'
-                    ),
+                    ->description(fn ($record) => __('app.dashboard.days_late', [
+                        'days' => now()->diffInDays($record->jatuh_tempo),
+                    ])),
 
                 Tables\Columns\TextColumn::make('status_bayar')
-                    ->label('Status')
+                    ->label(__('app.fields.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'unpaid' => 'danger',
@@ -66,7 +66,7 @@ class OverdueInvoicesWidget extends BaseWidget
                         'paid' => 'success',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn ($state) => Invoice::STATUS_LABELS[$state] ?? $state),
+                    ->formatStateUsing(fn (string $state): string => __('app.statuses.' . $state)),
             ])
             ->paginated([5, 10])
             ->defaultPaginationPageOption(5);

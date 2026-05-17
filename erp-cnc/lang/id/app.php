@@ -71,6 +71,12 @@ return [
         'unpaid' => 'Belum Bayar',
         'partial' => 'Sebagian',
         'paid' => 'Lunas',
+        'design' => 'Design',
+        'machining' => 'Machining',
+        'assembly' => 'Assembly',
+        'qc' => 'Quality Control',
+        'finished' => 'Selesai',
+        'delayed' => 'Delayed',
     ],
     'status_descriptions' => [
         'po_pending' => 'Menunggu produksi dimulai',
@@ -105,5 +111,6 @@ return [
         'quotation_conversion' => 'Conversion Rate Penawaran (6 Bulan)',
         'recent_activities' => 'Aktivitas Terbaru',
         'overdue_invoices' => 'Invoice Overdue',
+        'days_late' => ':days hari terlambat',
     ],
 ];

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class QuotationConversionChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Quotation Conversion Rate (6 Bulan)';
+    protected ?string $heading = null;
     protected static ?int $sort = 4;
     protected ?string $maxHeight = '300px';
     protected ?string $pollingInterval = null;
@@ -17,6 +17,11 @@ class QuotationConversionChartWidget extends ChartWidget
     protected function getData(): array
     {
         return Cache::remember('filament.quotation_conversion_chart', now()->addMinutes(5), fn (): array => $this->buildData());
+    }
+
+    protected function getHeading(): ?string
+    {
+        return __('app.dashboard.quotation_conversion');
     }
 
     protected function buildData(): array

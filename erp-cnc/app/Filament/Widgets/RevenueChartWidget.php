@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class RevenueChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Revenue Trend (6 Bulan Terakhir)';
+    protected ?string $heading = null;
     protected static ?int $sort = 2;
     protected ?string $maxHeight = '300px';
     protected ?string $pollingInterval = null;
@@ -17,6 +17,11 @@ class RevenueChartWidget extends ChartWidget
     protected function getData(): array
     {
         return Cache::remember('filament.revenue_chart', now()->addMinutes(5), fn (): array => $this->buildData());
+    }
+
+    protected function getHeading(): ?string
+    {
+        return __('app.dashboard.revenue_trend');
     }
 
     protected function buildData(): array

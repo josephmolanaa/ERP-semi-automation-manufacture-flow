@@ -20,7 +20,7 @@ class RecentActivitiesWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->heading('Recent Activities')
+            ->heading(__('app.dashboard.recent_activities'))
             ->query(
                 Quotation::query()
                     ->with(['customer', 'createdBy'])
@@ -30,12 +30,12 @@ class RecentActivitiesWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('nomor')
-                    ->label('Document')
+                    ->label(__('app.fields.quotation_no'))
                     ->searchable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label(__('app.fields.customer'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('status')
@@ -47,19 +47,20 @@ class RecentActivitiesWidget extends BaseWidget
                         'rejected' => 'danger',
                         'converted' => 'warning',
                         default => 'gray',
-                    }),
+                    })
+                    ->formatStateUsing(fn (string $state): string => __('app.statuses.' . $state)),
 
                 Tables\Columns\TextColumn::make('total_harga')
-                    ->label('Amount')
+                    ->label(__('app.fields.amount'))
                     ->money('IDR'),
 
                 Tables\Columns\TextColumn::make('tanggal')
-                    ->label('Date')
+                    ->label(__('app.fields.date'))
                     ->date('d M Y')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('createdBy.name')
-                    ->label('Created By'),
+                    ->label(__('app.fields.created_by')),
             ])
             ->paginated(false);
     }

@@ -71,27 +71,27 @@ class CncFlowStatsWidget extends BaseWidget
         $jobDelayed = (int) ($jobSummary->delayed_count ?? 0);
 
         return [
-            Stat::make('Penawaran Bulan Ini', $quotasiCount)
-                ->description('Total: Rp ' . number_format($quotasiValue, 0, ',', '.'))
+            Stat::make(__('app.dashboard.quotations_this_month'), $quotasiCount)
+                ->description(__('app.dashboard.total_prefix') . ': Rp ' . number_format($quotasiValue, 0, ',', '.'))
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('info'),
 
-            Stat::make('PO Masuk Bulan Ini', $poCount)
-                ->description('Nilai: Rp ' . number_format($poValue, 0, ',', '.'))
+            Stat::make(__('app.dashboard.po_this_month'), $poCount)
+                ->description(__('app.dashboard.value_prefix') . ': Rp ' . number_format($poValue, 0, ',', '.'))
                 ->descriptionIcon('heroicon-m-shopping-bag')
                 ->color('warning'),
 
-            Stat::make('Job Order Aktif', $jobPending)
-                ->description($jobDelayed > 0 ? "{$jobDelayed} Delayed" : 'Semua on-track')
+            Stat::make(__('app.dashboard.active_jobs'), $jobPending)
+                ->description($jobDelayed > 0 ? "{$jobDelayed} Delayed" : __('app.dashboard.all_on_track'))
                 ->descriptionIcon('heroicon-m-cog-6-tooth')
                 ->color($jobDelayed > 0 ? 'danger' : 'success'),
 
-            Stat::make('Revenue Bulan Ini', 'Rp ' . number_format($revenue, 0, ',', '.'))
+            Stat::make(__('app.dashboard.revenue_this_month'), 'Rp ' . number_format($revenue, 0, ',', '.'))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success'),
 
-            Stat::make('Piutang Outstanding', 'Rp ' . number_format($piutang, 0, ',', '.'))
-                ->description('Belum lunas')
+            Stat::make(__('app.dashboard.outstanding_receivables'), 'Rp ' . number_format($piutang, 0, ',', '.'))
+                ->description(__('app.dashboard.not_paid'))
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color($piutang > 50_000_000 ? 'danger' : 'warning'),
         ];

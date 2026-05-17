@@ -9,13 +9,18 @@ use Illuminate\Support\Facades\Cache;
 
 class JobOrderChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Status Job Order';
+    protected ?string $heading = null;
     protected static ?int $sort = 2;
     protected ?string $pollingInterval = null;
 
     protected function getData(): array
     {
         return Cache::remember('filament.job_order_chart', now()->addMinutes(5), fn (): array => $this->buildData());
+    }
+
+    protected function getHeading(): ?string
+    {
+        return __('app.dashboard.job_status');
     }
 
     protected function buildData(): array
@@ -43,7 +48,10 @@ class JobOrderChartWidget extends ChartWidget
                     ],
                 ],
             ],
-            'labels' => ['Pending', 'Design', 'Machining', 'Assembly', 'QC', 'Finished', 'Delayed'],
+            'labels' => array_map(
+                fn (string $status): string => __('app.statuses.' . $status),
+                $statuses,
+            ),
         ];
     }
 
