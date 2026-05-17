@@ -24,21 +24,36 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
-    protected static UnitEnum|string|null $navigationGroup = 'Master Data';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('app.groups.master_data');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('app.resources.customers');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('app.resources.customers');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Informasi Customer')
+                Section::make(__('app.sections.customer_info'))
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nama PIC')
+                            ->label(__('app.fields.pic'))
                             ->required()
                             ->maxLength(255),
 
                         TextInput::make('company')
-                            ->label('Perusahaan')
+                            ->label(__('app.fields.company'))
                             ->maxLength(255),
 
                         TextInput::make('email')
@@ -46,7 +61,7 @@ class CustomerResource extends Resource
                             ->maxLength(255),
 
                         TextInput::make('phone')
-                            ->label('Telepon')
+                            ->label(__('app.fields.phone'))
                             ->tel()
                             ->maxLength(20),
 
@@ -55,11 +70,11 @@ class CustomerResource extends Resource
                             ->maxLength(30),
 
                         Toggle::make('is_active')
-                            ->label('Aktif')
+                            ->label(__('app.fields.active'))
                             ->default(true),
 
                         Textarea::make('address')
-                            ->label('Alamat')
+                            ->label(__('app.fields.address'))
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
@@ -71,13 +86,13 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('company')
-                    ->label('Perusahaan')
+                    ->label(__('app.fields.company'))
                     ->searchable()
                     ->sortable()
                     ->placeholder('-'),
 
                 TextColumn::make('name')
-                    ->label('PIC')
+                    ->label(__('app.fields.pic'))
                     ->searchable()
                     ->sortable(),
 
@@ -87,12 +102,12 @@ class CustomerResource extends Resource
                     ->placeholder('-'),
 
                 TextColumn::make('phone')
-                    ->label('Telepon')
+                    ->label(__('app.fields.phone'))
                     ->searchable()
                     ->placeholder('-'),
 
                 IconColumn::make('is_active')
-                    ->label('Aktif')
+                    ->label(__('app.fields.active'))
                     ->boolean(),
 
                 TextColumn::make('quotations_count')

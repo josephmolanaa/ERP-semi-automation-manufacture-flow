@@ -80,7 +80,7 @@ class Po extends Model
 
     public function getStatusLabelAttribute(): string
     {
-        return self::STATUS_LABELS[$this->status] ?? ucfirst((string) $this->status);
+        return __('app.statuses.' . $this->status);
     }
 
     public function getStatusColorAttribute(): string
@@ -95,7 +95,7 @@ class Po extends Model
 
     public function getStatusDescriptionAttribute(): string
     {
-        return self::STATUS_DESCRIPTIONS[$this->status] ?? 'Status belum dikenali';
+        return __('app.status_descriptions.po_' . $this->status);
     }
 
     public static function generateNomor(): string

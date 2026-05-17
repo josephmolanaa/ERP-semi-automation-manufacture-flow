@@ -30,23 +30,38 @@ class SuratJalanResource extends Resource
 {
     protected static ?string $model = SuratJalan::class;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
-    protected static UnitEnum|string|null $navigationGroup = 'Sales';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('app.groups.sales');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('app.resources.surat_jalans');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('app.resources.surat_jalans');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Informasi Surat Jalan')
+                Section::make(__('app.sections.surat_jalan_info'))
                     ->schema([
                         TextInput::make('nomor_sj')
-                            ->label('Nomor SJ')
+                            ->label(__('app.resources.surat_jalans'))
                             ->default(fn () => SuratJalan::generateNomor())
                             ->disabled()
                             ->dehydrated()
                             ->required(),
 
                         Select::make('job_order_id')
-                            ->label('Job Order')
+                            ->label(__('app.resources.job_orders'))
                             ->getSearchResultsUsing(fn (string $search): array => JobOrder::query()
                                 ->with('po.customer')
                                 ->where('status', 'finished')
@@ -79,7 +94,7 @@ class SuratJalanResource extends Resource
                             ->required(),
 
                         DatePicker::make('tanggal_kirim')
-                            ->label('Tanggal Kirim')
+                            ->label(__('app.fields.date'))
                             ->default(today())
                             ->required(),
 
@@ -108,7 +123,7 @@ class SuratJalanResource extends Resource
                             ->openable(),
 
                         Textarea::make('alamat_kirim')
-                            ->label('Alamat Kirim')
+                            ->label(__('app.fields.address'))
                             ->columnSpanFull(),
 
                         Textarea::make('catatan')
@@ -124,18 +139,18 @@ class SuratJalanResource extends Resource
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('jobOrder'))
             ->columns([
                 TextColumn::make('nomor_sj')
-                    ->label('Nomor SJ')
+                    ->label(__('app.resources.surat_jalans'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 TextColumn::make('jobOrder.nomor_job')
-                    ->label('Job Order')
+                    ->label(__('app.resources.job_orders'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('tanggal_kirim')
-                    ->label('Tanggal Kirim')
+                    ->label(__('app.fields.date'))
                     ->date('d M Y')
                     ->sortable(),
 

@@ -30,23 +30,38 @@ class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
-    protected static UnitEnum|string|null $navigationGroup = 'Finance';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('app.groups.finance');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('app.resources.invoices');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('app.resources.invoices');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Informasi Invoice')
+                Section::make(__('app.sections.invoice_info'))
                     ->schema([
                         TextInput::make('nomor_invoice')
-                            ->label('Nomor Invoice')
+                            ->label(__('app.fields.invoice_no'))
                             ->default(fn () => Invoice::generateNomor())
                             ->disabled()
                             ->dehydrated()
                             ->required(),
 
                         Select::make('sj_id')
-                            ->label('Surat Jalan')
+                            ->label(__('app.resources.surat_jalans'))
                             ->getSearchResultsUsing(fn (string $search): array => SuratJalan::query()
                                 ->with('jobOrder.po.customer')
                                 ->where('status', 'diterima')
@@ -86,7 +101,7 @@ class InvoiceResource extends Resource
                             ->required(),
 
                         DatePicker::make('jatuh_tempo')
-                            ->label('Jatuh Tempo')
+                            ->label(__('app.fields.due_date'))
                             ->default(today()->addDays(30)),
 
                         TextInput::make('total')
@@ -95,7 +110,7 @@ class InvoiceResource extends Resource
                             ->required(),
 
                         TextInput::make('jumlah_bayar')
-                            ->label('Jumlah Bayar')
+                            ->label(__('app.fields.paid'))
                             ->numeric()
                             ->prefix('Rp')
                             ->default(0)
@@ -106,7 +121,7 @@ class InvoiceResource extends Resource
                             ->required(),
 
                         Select::make('status_bayar')
-                            ->label('Status Bayar')
+                            ->label(__('app.fields.status'))
                             ->options(Invoice::STATUS_LABELS)
                             ->default('unpaid')
                             ->required(),
@@ -193,13 +208,13 @@ class InvoiceResource extends Resource
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['suratJalan', 'createdBy']))
             ->columns([
                 TextColumn::make('nomor_invoice')
-                    ->label('Nomor Invoice')
+                    ->label(__('app.fields.invoice_no'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 TextColumn::make('suratJalan.nomor_sj')
-                    ->label('Surat Jalan')
+                    ->label(__('app.resources.surat_jalans'))
                     ->searchable(),
 
                 TextColumn::make('tanggal')
@@ -207,7 +222,7 @@ class InvoiceResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('jatuh_tempo')
-                    ->label('Jatuh Tempo')
+                    ->label(__('app.fields.due_date'))
                     ->date('d M Y')
                     ->sortable()
                     ->placeholder('-'),
@@ -217,16 +232,16 @@ class InvoiceResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('jumlah_bayar')
-                    ->label('Dibayar')
+                    ->label(__('app.fields.paid'))
                     ->money('IDR')
                     ->sortable(),
 
                 TextColumn::make('sisa_tagihan')
-                    ->label('Sisa')
+                    ->label(__('app.fields.remaining'))
                     ->money('IDR'),
 
                 TextColumn::make('status_bayar')
-                    ->label('Status')
+                    ->label(__('app.fields.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'unpaid' => 'danger',
@@ -241,7 +256,7 @@ class InvoiceResource extends Resource
                     ->getStateUsing(fn ($record): bool => filled($record->pdf_path)),
 
                 TextColumn::make('createdBy.name')
-                    ->label('Dibuat Oleh')
+                    ->label(__('app.fields.created_by'))
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
@@ -249,7 +264,7 @@ class InvoiceResource extends Resource
             ->defaultSort('tanggal', 'desc')
             ->filters([
                 SelectFilter::make('status_bayar')
-                    ->label('Status Bayar')
+                    ->label(__('app.fields.status'))
                     ->options(Invoice::STATUS_LABELS),
             ])
             ->paginated([10, 25, 50])

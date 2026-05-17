@@ -30,16 +30,31 @@ class JobOrderResource extends Resource
 {
     protected static ?string $model = JobOrder::class;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static UnitEnum|string|null $navigationGroup = 'Produksi';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('app.groups.production');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('app.resources.job_orders');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('app.resources.job_orders');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Informasi Job Order')
+                Section::make(__('app.sections.job_order_info'))
                     ->schema([
                         TextInput::make('nomor_job')
-                            ->label('Nomor Job')
+                            ->label(__('app.fields.job_no'))
                             ->default(fn () => JobOrder::generateNomor())
                             ->disabled()
                             ->dehydrated()
@@ -88,7 +103,7 @@ class JobOrderResource extends Resource
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['po.customer']))
             ->columns([
                 TextColumn::make('nomor_job')
-                    ->label('Nomor Job')
+                    ->label(__('app.fields.job_no'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
@@ -99,7 +114,7 @@ class JobOrderResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('po.customer.name')
-                    ->label('Customer')
+                    ->label(__('app.fields.customer'))
                     ->searchable(),
 
                 TextColumn::make('status')
@@ -117,7 +132,7 @@ class JobOrderResource extends Resource
                     }),
 
                 TextColumn::make('progress_persen')
-                    ->label('Progress')
+                    ->label(__('app.fields.progress'))
                     ->suffix('%')
                     ->sortable(),
 
@@ -150,7 +165,7 @@ class JobOrderResource extends Resource
             ->defaultPaginationPageOption(10)
             ->actions([
                 Actions\Action::make('tambah_progress')
-                    ->label('Progress')
+                    ->label(__('app.actions.add_progress'))
                     ->icon('heroicon-o-plus-circle')
                     ->color('success')
                     ->visible(fn (JobOrder $record): bool => FilamentAccess::allowed('update_job_progress') && $record->status !== 'finished')
@@ -209,7 +224,7 @@ class JobOrderResource extends Resource
                     }),
 
                 Actions\Action::make('advance_status')
-                    ->label('Lanjut Status')
+                    ->label(__('app.actions.advance_status'))
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color('info')
                     ->visible(fn (JobOrder $record): bool => ! in_array($record->status, ['finished', 'delayed'], true))

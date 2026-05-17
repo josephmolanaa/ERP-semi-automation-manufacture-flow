@@ -32,15 +32,30 @@ class QuotationResource extends Resource
 {
     protected static ?string $model = Quotation::class;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationLabel = 'Penawaran';
-    protected static UnitEnum|string|null $navigationGroup = 'Sales';
+    protected static ?string $navigationLabel = null;
+    protected static UnitEnum|string|null $navigationGroup = null;
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('app.groups.sales');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('app.resources.quotations');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('app.resources.quotations');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             \Filament\Schemas\Components\Group::make()->schema([
-                Section::make('Informasi Customer')
+                Section::make(__('app.sections.customer_info'))
                 // ->columns(2)
                 ->schema([
                     /* TextInput::make('nomor')
@@ -51,7 +66,7 @@ class QuotationResource extends Resource
                         ->required(), */
 
                     Select::make('customer_id')
-                        ->label('Customer')
+                        ->label(__('app.fields.customer'))
                         ->relationship('customer', 'name')
                         ->searchable()
                         ->required()
@@ -89,7 +104,7 @@ class QuotationResource extends Resource
                         ->columnSpanFull(),
                 ]),
 
-            Section::make('Item Penawaran')
+            Section::make(__('app.sections.quotation_items'))
                 ->schema([
                     Repeater::make('items')
                         ->relationship()
@@ -145,9 +160,9 @@ class QuotationResource extends Resource
             ])->columnSpan(['lg' => 2]),
 
             \Filament\Schemas\Components\Group::make()->schema([
-                Section::make('Status & Dokumen')->schema([
+                Section::make(__('app.sections.status_documents'))->schema([
                     TextInput::make('nomor')
-                        ->label('Nomor Quotation')
+                        ->label(__('app.fields.quotation_no'))
                         ->default(fn () => Quotation::generateNomor())
                         ->disabled()
                         ->dehydrated()
@@ -266,11 +281,12 @@ class QuotationResource extends Resource
                     ->weight('bold'),
 
                 TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label(__('app.fields.customer'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('tanggal')
+                    ->label(__('app.fields.date'))
                     ->date('d M Y')
                     ->sortable(),
 
@@ -308,7 +324,7 @@ class QuotationResource extends Resource
                     ->getStateUsing(fn ($record): bool => filled($record->pdf_path)),
 
                 TextColumn::make('createdBy.name')
-                    ->label('Dibuat Oleh')
+                    ->label(__('app.fields.created_by'))
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
@@ -330,7 +346,7 @@ class QuotationResource extends Resource
 
                 // ── Action: Kirim Email ──────────────────────────────────
                 Actions\Action::make('kirim_email')
-                    ->label('Kirim Email')
+                    ->label(__('app.actions.send_email'))
                     ->icon('heroicon-o-envelope')
                     ->color('info')
                     ->visible(fn ($record) => FilamentAccess::allowed('send_quotation') && in_array($record->status, ['draft', 'sent']))
@@ -351,7 +367,7 @@ class QuotationResource extends Resource
 
                 // ── Action: Download PDF ─────────────────────────────────
                 Actions\Action::make('uploaded_pdf')
-                    ->label('PDF Upload')
+                    ->label(__('app.actions.uploaded_pdf'))
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('gray')
                     ->visible(fn ($record): bool => filled($record->pdf_path))
@@ -359,7 +375,7 @@ class QuotationResource extends Resource
                     ->openUrlInNewTab(),
 
                 Actions\Action::make('download_pdf')
-                    ->label('PDF Generate')
+                    ->label(__('app.actions.generated_pdf'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
                     ->url(fn ($record) => route('quotation.pdf', $record))
@@ -367,7 +383,7 @@ class QuotationResource extends Resource
 
                 // ── Action: Convert to PO ────────────────────────────────
                 Actions\Action::make('convert_to_po')
-                    ->label('Convert ke PO')
+                    ->label(__('app.actions.convert_to_po'))
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color('success')
                     ->visible(fn (Quotation $record): bool => FilamentAccess::allowed('convert_quotation') && $record->canBeConverted())

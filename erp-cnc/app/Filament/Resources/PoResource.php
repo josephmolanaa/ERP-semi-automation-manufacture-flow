@@ -29,23 +29,38 @@ class PoResource extends Resource
 {
     protected static ?string $model = Po::class;
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
-    protected static UnitEnum|string|null $navigationGroup = 'Sales';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('app.groups.sales');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('app.resources.pos');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('app.resources.pos');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Informasi PO')
+                Section::make(__('app.sections.po_info'))
                     ->schema([
                         TextInput::make('nomor_po')
-                            ->label('Nomor PO')
+                            ->label(__('app.fields.po_no'))
                             ->default(fn () => Po::generateNomor())
                             ->disabled()
                             ->dehydrated()
                             ->required(),
 
                         Select::make('customer_id')
-                            ->label('Customer')
+                            ->label(__('app.fields.customer'))
                             ->relationship('customer', 'name')
                             ->searchable()
                             ->required(),
@@ -59,16 +74,16 @@ class PoResource extends Resource
                             ->options(Po::STATUS_LABELS)
                             ->default('pending')
                             ->native(false)
-                            ->helperText('Status akan ikut diperbarui otomatis saat job order bergerak.')
+                            ->helperText(__('app.messages.po_status_hint'))
                             ->required(),
 
                         DatePicker::make('tanggal_po')
-                            ->label('Tanggal PO')
+                            ->label(__('app.fields.date'))
                             ->default(today())
                             ->required(),
 
                         DatePicker::make('estimasi_selesai')
-                            ->label('Estimasi Selesai'),
+                            ->label(__('app.fields.estimate')),
 
                         TextInput::make('total')
                             ->numeric()
@@ -169,14 +184,14 @@ class PoResource extends Resource
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['customer', 'quotation', 'createdBy']))
             ->columns([
                 TextColumn::make('nomor_po')
-                    ->label('Nomor PO')
+                    ->label(__('app.fields.po_no'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
                     ->description(fn (Po $record): ?string => $record->quotation?->nomor ? "Quotation: {$record->quotation->nomor}" : null),
 
                 TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label(__('app.fields.customer'))
                     ->searchable()
                     ->sortable(),
 
@@ -186,12 +201,12 @@ class PoResource extends Resource
                     ->placeholder('-'),
 
                 TextColumn::make('tanggal_po')
-                    ->label('Tanggal')
+                    ->label(__('app.fields.date'))
                     ->date('d M Y')
                     ->sortable(),
 
                 TextColumn::make('estimasi_selesai')
-                    ->label('Estimasi')
+                    ->label(__('app.fields.estimate'))
                     ->date('d M Y')
                     ->sortable()
                     ->color(fn (Po $record): ?string => $record->estimasi_selesai?->isPast() && $record->status !== 'selesai' ? 'danger' : null)
@@ -199,7 +214,7 @@ class PoResource extends Resource
 
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Po::STATUS_LABELS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __('app.statuses.' . $state))
                     ->color(fn (string $state): string => Po::STATUS_COLORS[$state] ?? 'gray')
                     ->icon(fn (string $state): string => Po::STATUS_ICONS[$state] ?? 'heroicon-m-question-mark-circle')
                     ->description(fn (string $state): string => Po::STATUS_DESCRIPTIONS[$state] ?? 'Status belum dikenali'),
