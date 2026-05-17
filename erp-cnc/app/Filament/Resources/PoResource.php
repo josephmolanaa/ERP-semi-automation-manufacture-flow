@@ -58,6 +58,8 @@ class PoResource extends Resource
                         Select::make('status')
                             ->options(Po::STATUS_LABELS)
                             ->default('pending')
+                            ->native(false)
+                            ->helperText('Status akan ikut diperbarui otomatis saat job order bergerak.')
                             ->required(),
 
                         DatePicker::make('tanggal_po')
@@ -170,7 +172,8 @@ class PoResource extends Resource
                     ->label('Nomor PO')
                     ->searchable()
                     ->sortable()
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->description(fn (Po $record): ?string => $record->quotation?->nomor ? "Quotation: {$record->quotation->nomor}" : null),
 
                 TextColumn::make('customer.name')
                     ->label('Customer')
@@ -191,21 +194,20 @@ class PoResource extends Resource
                     ->label('Estimasi')
                     ->date('d M Y')
                     ->sortable()
+                    ->color(fn (Po $record): ?string => $record->estimasi_selesai?->isPast() && $record->status !== 'selesai' ? 'danger' : null)
                     ->placeholder('-'),
 
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'gray',
-                        'proses' => 'info',
-                        'selesai' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    }),
+                    ->formatStateUsing(fn (string $state): string => Po::STATUS_LABELS[$state] ?? $state)
+                    ->color(fn (string $state): string => Po::STATUS_COLORS[$state] ?? 'gray')
+                    ->icon(fn (string $state): string => Po::STATUS_ICONS[$state] ?? 'heroicon-m-question-mark-circle')
+                    ->description(fn (string $state): string => Po::STATUS_DESCRIPTIONS[$state] ?? 'Status belum dikenali'),
 
                 TextColumn::make('total')
                     ->money('IDR')
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('semibold'),
 
                 IconColumn::make('pdf_path')
                     ->label('PDF')

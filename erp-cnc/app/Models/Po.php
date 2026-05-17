@@ -21,6 +21,27 @@ class Po extends Model
         'cancelled' => 'Cancelled',
     ];
 
+    public const STATUS_COLORS = [
+        'pending' => 'gray',
+        'proses' => 'info',
+        'selesai' => 'success',
+        'cancelled' => 'danger',
+    ];
+
+    public const STATUS_ICONS = [
+        'pending' => 'heroicon-m-clock',
+        'proses' => 'heroicon-m-cog-6-tooth',
+        'selesai' => 'heroicon-m-check-circle',
+        'cancelled' => 'heroicon-m-x-circle',
+    ];
+
+    public const STATUS_DESCRIPTIONS = [
+        'pending' => 'Menunggu produksi dimulai',
+        'proses' => 'Sedang diproses oleh produksi',
+        'selesai' => 'PO sudah selesai diproduksi',
+        'cancelled' => 'PO dibatalkan',
+    ];
+
     protected $fillable = [
         'nomor_po', 'quotation_id', 'customer_id', 'created_by',
         'tanggal_po', 'estimasi_selesai', 'status', 'total', 'catatan', 'pdf_path',
@@ -55,6 +76,26 @@ class Po extends Model
     public function jobOrder(): HasOne
     {
         return $this->hasOne(JobOrder::class)->latestOfMany();
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUS_LABELS[$this->status] ?? ucfirst((string) $this->status);
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return self::STATUS_COLORS[$this->status] ?? 'gray';
+    }
+
+    public function getStatusIconAttribute(): string
+    {
+        return self::STATUS_ICONS[$this->status] ?? 'heroicon-m-question-mark-circle';
+    }
+
+    public function getStatusDescriptionAttribute(): string
+    {
+        return self::STATUS_DESCRIPTIONS[$this->status] ?? 'Status belum dikenali';
     }
 
     public static function generateNomor(): string
