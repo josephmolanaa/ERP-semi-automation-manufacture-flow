@@ -36,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::TOPBAR_END,
+            fn (): View => view('filament.admin.language-switcher'),
+        );
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::TOPBAR_END,
             fn (): View => view('filament.admin.theme-toggle'),
         );
 
