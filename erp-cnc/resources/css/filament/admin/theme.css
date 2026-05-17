@@ -4,7 +4,8 @@
 @source '../../../../resources/views/filament/**/*';
 @source '../../../../resources/views/**/*.blade.php';
 
-:root {
+:root,
+html:not(.dark) {
     --erp-bg: #f7f6f3;
     --erp-surface: #ffffff;
     --erp-surface-muted: #f0eee9;
@@ -24,8 +25,10 @@
     --erp-red-bg: #fcebeb;
     --erp-radius: 10px;
     --erp-radius-lg: 14px;
+    color-scheme: light;
 }
 
+html.dark,
 .dark {
     --erp-bg: #121212;
     --erp-surface: #1e1e1e;
@@ -44,6 +47,7 @@
     --erp-amber-bg: #3b2a10;
     --erp-red: #e57373;
     --erp-red-bg: #3a1616;
+    color-scheme: dark;
 }
 
 html {
@@ -62,6 +66,15 @@ body,
     background: var(--erp-bg);
 }
 
+html:not(.dark) body,
+html:not(.dark) .fi-body,
+html:not(.dark) .fi-layout,
+html:not(.dark) .fi-main,
+html:not(.dark) .fi-main-ctn {
+    background: var(--erp-bg) !important;
+    color: var(--erp-text) !important;
+}
+
 .fi-sidebar {
     background: var(--erp-surface);
     border-right: 1px solid var(--erp-border-soft);
@@ -74,12 +87,33 @@ body,
     box-shadow: none;
 }
 
+html:not(.dark) .fi-sidebar,
+html:not(.dark) .fi-sidebar-header,
+html:not(.dark) .fi-topbar > nav,
+html:not(.dark) .fi-topbar nav,
+html:not(.dark) .fi-section,
+html:not(.dark) .fi-wi-widget,
+html:not(.dark) .fi-wi-stats-overview-stat,
+html:not(.dark) .fi-ta-ctn,
+html:not(.dark) .fi-fo-repeater-item,
+html:not(.dark) .fi-modal-window,
+html:not(.dark) .fi-dropdown-panel {
+    background: var(--erp-surface) !important;
+    border-color: var(--erp-border-soft) !important;
+    color: var(--erp-text) !important;
+}
+
 .fi-topbar > nav,
 .fi-topbar nav {
     background: color-mix(in srgb, var(--erp-surface) 92%, transparent);
     border-bottom: 1px solid var(--erp-border-soft);
     box-shadow: none;
     backdrop-filter: blur(16px);
+}
+
+html:not(.dark) .fi-topbar > nav,
+html:not(.dark) .fi-topbar nav {
+    background: color-mix(in srgb, var(--erp-surface) 92%, transparent) !important;
 }
 
 .erp-brand-mark {
@@ -131,15 +165,30 @@ body,
     transition: background-color 150ms ease, color 150ms ease;
 }
 
+html:not(.dark) .fi-sidebar-item-button {
+    color: var(--erp-text-muted) !important;
+}
+
 .fi-sidebar-item-button:hover {
     background: var(--erp-surface-muted);
     color: var(--erp-text);
+}
+
+html:not(.dark) .fi-sidebar-item-button:hover {
+    background: var(--erp-surface-muted) !important;
+    color: var(--erp-text) !important;
 }
 
 .fi-sidebar-item-active > .fi-sidebar-item-button,
 .fi-sidebar-item-button.fi-active {
     background: var(--erp-accent);
     color: var(--erp-bg);
+}
+
+html:not(.dark) .fi-sidebar-item-active > .fi-sidebar-item-button,
+html:not(.dark) .fi-sidebar-item-button.fi-active {
+    background: var(--erp-accent) !important;
+    color: var(--erp-bg) !important;
 }
 
 .fi-sidebar-item-active svg,
@@ -167,6 +216,26 @@ body,
 .fi-breadcrumbs a {
     color: var(--erp-text-muted);
     font-size: 0.8125rem;
+}
+
+html:not(.dark) .fi-header-heading,
+html:not(.dark) .fi-section-header-heading,
+html:not(.dark) .fi-ta-header-heading,
+html:not(.dark) .fi-wi-stats-overview-stat-label,
+html:not(.dark) .fi-ta-text,
+html:not(.dark) .fi-ta-text-item,
+html:not(.dark) .fi-ta-column-label,
+html:not(.dark) .fi-fo-field-wrp-label span {
+    color: var(--erp-text) !important;
+}
+
+html:not(.dark) .fi-header-subheading,
+html:not(.dark) .fi-breadcrumbs,
+html:not(.dark) .fi-breadcrumbs a,
+html:not(.dark) .fi-section-header-description,
+html:not(.dark) .fi-ta-header-description,
+html:not(.dark) .fi-wi-stats-overview-stat-description {
+    color: var(--erp-text-muted) !important;
 }
 
 .fi-section,
@@ -258,6 +327,16 @@ body,
     border-color: var(--erp-border);
     border-radius: 0.5rem;
     box-shadow: none;
+}
+
+html:not(.dark) .fi-input-wrp,
+html:not(.dark) .fi-select-input,
+html:not(.dark) .fi-input,
+html:not(.dark) .fi-textarea,
+html:not(.dark) .fi-fo-date-time-picker-trigger {
+    background: var(--erp-surface) !important;
+    border-color: var(--erp-border) !important;
+    color: var(--erp-text) !important;
 }
 
 .fi-input-wrp:focus-within,

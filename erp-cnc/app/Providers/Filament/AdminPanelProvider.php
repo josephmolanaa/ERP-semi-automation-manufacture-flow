@@ -47,6 +47,7 @@ class AdminPanelProvider extends PanelProvider
                 'danger' => '#a32d2d',
             ])
             ->font('DM Sans')
+            ->darkMode(true)
             ->defaultThemeMode(ThemeMode::Light)
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
