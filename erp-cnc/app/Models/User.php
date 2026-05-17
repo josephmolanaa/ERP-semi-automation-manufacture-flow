@@ -16,6 +16,9 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable;
 
+    /** @var array<int, bool> */
+    private static array $panelAccessCache = [];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -52,6 +55,14 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasAnyRole(['admin', 'sales', 'produksi', 'finance', 'gudang']);
+        $userId = (int) $this->getKey();
+
+        return self::$panelAccessCache[$userId] ??= $this->hasAnyRole([
+            'admin',
+            'sales',
+            'produksi',
+            'finance',
+            'gudang',
+        ]);
     }
 }

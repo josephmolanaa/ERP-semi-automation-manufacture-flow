@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('2.25rem')
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth('full')
+            ->spa()
             ->colors([
                 'primary' => '#1a1917',
                 'secondary' => '#6b6860',
