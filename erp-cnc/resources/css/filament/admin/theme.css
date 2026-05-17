@@ -584,4 +584,14 @@ html:not(.dark) .fi-fo-date-time-picker-trigger {
     .fi-ta-ctn {
         border-radius: 0.75rem;
     }
+
+    .erp-language-switcher__trigger {
+        min-width: 2.25rem;
+        padding-inline: 0;
+    }
+
+    .erp-language-switcher__label,
+    .erp-language-switcher__trigger svg {
+        display: none;
+    }
 }

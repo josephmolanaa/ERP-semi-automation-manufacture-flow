@@ -17,6 +17,7 @@
             <a
                 href="{{ route('lang.switch', $locale) }}"
                 class="erp-language-switcher__item {{ $currentLocale === $locale ? 'is-active' : '' }}"
+                @if ($currentLocale === $locale) aria-current="true" @endif
             >
                 <span>{{ strtoupper($locale) }}</span>
                 <strong>{{ __('app.locales.' . $locale) }}</strong>

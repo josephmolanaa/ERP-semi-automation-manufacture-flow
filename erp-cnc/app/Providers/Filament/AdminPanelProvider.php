@@ -39,6 +39,9 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth('full')
             ->spa()
+            ->spaUrlExceptions([
+                '*/lang/*',
+            ])
             ->colors([
                 'primary' => '#1a1917',
                 'secondary' => '#6b6860',
