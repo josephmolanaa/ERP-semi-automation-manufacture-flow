@@ -11,6 +11,7 @@ class QuotationConversionChartWidget extends ChartWidget
 {
     protected ?string $heading = null;
     protected static ?int $sort = 4;
+    protected static bool $isLazy = true;
     protected ?string $maxHeight = '300px';
     protected ?string $pollingInterval = null;
 
@@ -31,8 +32,8 @@ class QuotationConversionChartWidget extends ChartWidget
         $monthlyRows = Quotation::query()
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->select([
-                DB::raw('YEAR(tanggal) as year'),
-                DB::raw('MONTH(tanggal) as month'),
+                DB::raw("strftime('%Y', tanggal) as year"),
+                DB::raw("strftime('%m', tanggal) as month"),
                 DB::raw('COUNT(*) as total_count'),
                 DB::raw("SUM(CASE WHEN status IN ('approved', 'converted') THEN 1 ELSE 0 END) as converted_count"),
             ])
