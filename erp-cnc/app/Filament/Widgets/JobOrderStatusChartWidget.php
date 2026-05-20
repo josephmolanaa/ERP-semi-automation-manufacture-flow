@@ -4,16 +4,25 @@ namespace App\Filament\Widgets;
 
 use App\Models\JobOrder;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class JobOrderStatusChartWidget extends ChartWidget
 {
     protected ?string $heading = null;
     protected static ?int $sort = 3;
+    protected static bool $isLazy = true;
     protected ?string $maxHeight = '300px';
+    protected ?string $pollingInterval = null;
 
     protected function getData(): array
     {
-        $statuses = JobOrder::select('status', \DB::raw('count(*) as count'))
+        return Cache::remember('filament.job_order_status_chart', now()->addMinutes(5), fn (): array => $this->buildData());
+    }
+
+    protected function buildData(): array
+    {
+        $statuses = JobOrder::select('status', DB::raw('count(*) as count'))
             ->whereIn('status', ['pending', 'design', 'machining', 'assembly', 'qc', 'finished'])
             ->groupBy('status')
             ->get();
