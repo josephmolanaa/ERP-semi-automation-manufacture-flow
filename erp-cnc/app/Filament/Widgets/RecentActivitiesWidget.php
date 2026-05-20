@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 class RecentActivitiesWidget extends BaseWidget
 {
     protected static ?int $sort = 5;
+    protected static bool $isLazy = true;
     protected int | string | array $columnSpan = 'full';
     protected ?string $pollingInterval = null;
 
