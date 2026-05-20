@@ -11,6 +11,7 @@ class JobOrderChartWidget extends ChartWidget
 {
     protected ?string $heading = null;
     protected static ?int $sort = 2;
+    protected static bool $isLazy = true;
     protected ?string $pollingInterval = null;
 
     protected function getData(): array
