@@ -11,6 +11,7 @@ class RevenueChartWidget extends ChartWidget
 {
     protected ?string $heading = null;
     protected static ?int $sort = 2;
+    protected static bool $isLazy = true;
     protected ?string $maxHeight = '300px';
     protected ?string $pollingInterval = null;
 
@@ -31,8 +32,8 @@ class RevenueChartWidget extends ChartWidget
         $data = Invoice::where('status_bayar', 'paid')
             ->where('tanggal', '>=', $startDate)
             ->select(
-                DB::raw('YEAR(tanggal) as year'),
-                DB::raw('MONTH(tanggal) as month'),
+                DB::raw("strftime('%Y', tanggal) as year"),
+                DB::raw("strftime('%m', tanggal) as month"),
                 DB::raw('SUM(total) as total')
             )
             ->groupBy('year', 'month')
