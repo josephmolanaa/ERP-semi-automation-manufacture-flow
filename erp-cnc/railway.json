@@ -5,8 +5,8 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "preDeployCommand": "chmod +x ./railway/init-app.sh && sh ./railway/init-app.sh",
-    "startCommand": "chmod +x ./start.sh && sh ./start.sh",
+    "preDeployCommand": "chmod +x /app/railway/init-app.sh && sh /app/railway/init-app.sh",
+    "startCommand": "chmod +x /app/start.sh && sh /app/start.sh",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 120,
     "restartPolicyType": "ON_FAILURE",
