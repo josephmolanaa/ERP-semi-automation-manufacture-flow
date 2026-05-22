@@ -19,7 +19,7 @@ class JobOrderChartWidget extends ChartWidget
         return Cache::remember('filament.job_order_chart', now()->addMinutes(5), fn (): array => $this->buildData());
     }
 
-    protected function getHeading(): ?string
+    public function getHeading(): ?string
     {
         return __('app.dashboard.job_status');
     }
@@ -56,7 +56,7 @@ class JobOrderChartWidget extends ChartWidget
         ];
     }
 
-    protected function getType(): string
+    public function getType(): string
     {
         return 'doughnut';
     }

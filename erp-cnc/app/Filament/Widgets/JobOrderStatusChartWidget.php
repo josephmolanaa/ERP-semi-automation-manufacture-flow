@@ -58,12 +58,12 @@ class JobOrderStatusChartWidget extends ChartWidget
         ];
     }
 
-    protected function getHeading(): ?string
+    public function getHeading(): ?string
     {
         return __('app.dashboard.job_status');
     }
 
-    protected function getType(): string
+    public function getType(): string
     {
         return 'doughnut';
     }

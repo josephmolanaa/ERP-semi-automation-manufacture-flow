@@ -20,7 +20,7 @@ class RevenueChartWidget extends ChartWidget
         return Cache::remember('filament.revenue_chart', now()->addMinutes(5), fn (): array => $this->buildData());
     }
 
-    protected function getHeading(): ?string
+    public function getHeading(): ?string
     {
         return __('app.dashboard.revenue_trend');
     }
@@ -71,7 +71,7 @@ class RevenueChartWidget extends ChartWidget
         ];
     }
 
-    protected function getType(): string
+    public function getType(): string
     {
         return 'line';
     }
