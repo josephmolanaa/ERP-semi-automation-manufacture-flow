@@ -2,10 +2,13 @@
 set -e
 
 APP_PORT="${PORT:-8080}"
+APP_DIR="${APP_DIR:-/app}"
 export CACHE_STORE="${CACHE_STORE:-file}"
 export SESSION_DRIVER="${SESSION_DRIVER:-file}"
 export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
 export LOG_STACK="${LOG_STACK:-stderr}"
+
+cd "${APP_DIR}"
 
 mkdir -p \
     storage/app/public \
@@ -16,7 +19,13 @@ mkdir -p \
     storage/logs \
     bootstrap/cache
 
-echo "Starting Laravel on 0.0.0.0:${APP_PORT}"
+chmod -R ug+rwX storage bootstrap/cache || true
+
+echo "PWD=$(pwd)"
+echo "PORT=${APP_PORT}"
+echo "PHP=$(php -v | head -n 1)"
+echo "Router=$(test -f public/railway-router.php && echo found || echo missing)"
+echo "Starting PHP server on 0.0.0.0:${APP_PORT}"
 exec php \
     -d opcache.enable_cli=1 \
     -d opcache.memory_consumption=128 \
