@@ -2,6 +2,9 @@ FROM php:8.3-cli
 
 WORKDIR /app
 
+ENV LOG_CHANNEL=stderr \
+    LOG_STACK=stderr
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         curl \
@@ -33,6 +36,14 @@ COPY . .
 RUN npm run build \
     && php artisan package:discover --ansi \
     && php artisan filament:assets \
+    && mkdir -p \
+        storage/app/public \
+        storage/framework/cache/data \
+        storage/framework/sessions \
+        storage/framework/testing \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache \
     && chmod +x ./start.sh ./railway/init-app.sh
 
 CMD ["sh", "./start.sh"]
