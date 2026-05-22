@@ -46,4 +46,4 @@ RUN npm run build \
         bootstrap/cache \
     && chmod +x ./start.sh ./railway/init-app.sh
 
-CMD ["sh", "./start.sh"]
+CMD ["sh", "/app/start.sh"]
