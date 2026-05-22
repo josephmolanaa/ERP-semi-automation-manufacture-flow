@@ -29,11 +29,12 @@ class QuotationConversionChartWidget extends ChartWidget
     {
         $startDate = now()->subMonths(5)->startOfMonth()->toDateString();
         $endDate = now()->endOfMonth()->toDateString();
+        [$yearExpression, $monthExpression] = $this->datePartExpressions('tanggal');
         $monthlyRows = Quotation::query()
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->select([
-                DB::raw("strftime('%Y', tanggal) as year"),
-                DB::raw("strftime('%m', tanggal) as month"),
+                DB::raw($yearExpression . ' as year'),
+                DB::raw($monthExpression . ' as month'),
                 DB::raw('COUNT(*) as total_count'),
                 DB::raw("SUM(CASE WHEN status IN ('approved', 'converted') THEN 1 ELSE 0 END) as converted_count"),
             ])
@@ -71,6 +72,15 @@ class QuotationConversionChartWidget extends ChartWidget
             ],
             'labels' => $labels,
         ];
+    }
+
+    protected function datePartExpressions(string $column): array
+    {
+        return match (DB::connection()->getDriverName()) {
+            'pgsql' => ["EXTRACT(YEAR FROM {$column})::int", "EXTRACT(MONTH FROM {$column})::int"],
+            'mysql', 'mariadb' => ["YEAR({$column})", "MONTH({$column})"],
+            default => ["CAST(strftime('%Y', {$column}) AS integer)", "CAST(strftime('%m', {$column}) AS integer)"],
+        };
     }
 
     public function getType(): string

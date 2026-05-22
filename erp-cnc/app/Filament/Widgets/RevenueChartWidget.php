@@ -28,12 +28,13 @@ class RevenueChartWidget extends ChartWidget
     protected function buildData(): array
     {
         $startDate = now()->subMonths(5)->startOfMonth()->toDateString();
+        [$yearExpression, $monthExpression] = $this->datePartExpressions('tanggal');
 
         $data = Invoice::where('status_bayar', 'paid')
             ->where('tanggal', '>=', $startDate)
             ->select(
-                DB::raw("strftime('%Y', tanggal) as year"),
-                DB::raw("strftime('%m', tanggal) as month"),
+                DB::raw($yearExpression . ' as year'),
+                DB::raw($monthExpression . ' as month'),
                 DB::raw('SUM(total) as total')
             )
             ->groupBy('year', 'month')
@@ -69,6 +70,15 @@ class RevenueChartWidget extends ChartWidget
             ],
             'labels' => $labels,
         ];
+    }
+
+    protected function datePartExpressions(string $column): array
+    {
+        return match (DB::connection()->getDriverName()) {
+            'pgsql' => ["EXTRACT(YEAR FROM {$column})::int", "EXTRACT(MONTH FROM {$column})::int"],
+            'mysql', 'mariadb' => ["YEAR({$column})", "MONTH({$column})"],
+            default => ["CAST(strftime('%Y', {$column}) AS integer)", "CAST(strftime('%m', {$column}) AS integer)"],
+        };
     }
 
     public function getType(): string
