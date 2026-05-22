@@ -25,6 +25,14 @@ echo "PWD=$(pwd)"
 echo "PORT=${APP_PORT}"
 echo "PHP=$(php -v | head -n 1)"
 echo "Router=$(test -f public/railway-router.php && echo found || echo missing)"
+
+if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+    echo "Running Laravel migrations"
+    php artisan migrate --force
+    php artisan db:seed --class=RolePermissionSeeder --force || true
+    php artisan db:seed --class=AdminUserSeeder --force || true
+fi
+
 echo "Starting PHP server on 0.0.0.0:${APP_PORT}"
 exec php \
     -d opcache.enable_cli=1 \
