@@ -78,6 +78,11 @@ class Po extends Model
         return $this->hasOne(JobOrder::class)->latestOfMany();
     }
 
+    public function items(): HasMany
+    {
+        return $this->hasMany(PoItem::class)->orderBy('urutan');
+    }
+
     public function getStatusLabelAttribute(): string
     {
         return __('app.statuses.' . $this->status);

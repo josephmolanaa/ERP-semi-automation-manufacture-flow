@@ -64,6 +64,11 @@ class JobOrder extends Model
         return $this->hasOne(SuratJalan::class);
     }
 
+    public function items(): HasMany
+    {
+        return $this->hasMany(JobOrderItem::class)->orderBy('urutan');
+    }
+
     public static function generateNomor(): string
     {
         $prefix = 'JO-' . now()->format('Ym') . '-';
