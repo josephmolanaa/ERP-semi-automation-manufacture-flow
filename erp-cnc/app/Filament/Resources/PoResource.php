@@ -61,8 +61,9 @@ class PoResource extends Resource
 
                         Select::make('customer_id')
                             ->label(__('app.fields.customer'))
-                            ->relationship('customer', 'display_name')
-                            ->searchable()
+                            ->relationship('customer', 'company')
+                            ->getOptionLabelFromRecordUsing(fn (\App\Models\Customer $record): string => $record->company ?: $record->name)
+                            ->searchable(['company', 'name'])
                             ->preload()
                             ->required(),
 
