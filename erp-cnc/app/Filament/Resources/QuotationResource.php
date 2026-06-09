@@ -138,15 +138,14 @@ class QuotationResource extends Resource
 
                              TextInput::make('harga_satuan')
                                  ->label('Harga Satuan')
+                                 ->numeric()
                                  ->prefix('Rp')
                                  ->required()
-                                 ->live(onBlur: true)
-                                 ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
-                                 ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null)
+                                 ->live(debounce: 1500)
                                  ->afterStateUpdated(function ($state, $set, $get) {
-                                     $harga = (float) str_replace('.', '', (string) $state);
-                                     $qty   = (float) $get('qty');
-                                     $set('subtotal', $harga * $qty);
+                                     $qty = (float) $get('qty');
+                                     $harga = (float) $state;
+                                     $set('subtotal', $qty * $harga);
                                  }),
 
                             TextInput::make('subtotal')
