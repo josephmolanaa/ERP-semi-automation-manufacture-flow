@@ -67,7 +67,7 @@ class QuotationResource extends Resource
 
                     Select::make('customer_id')
                         ->label(__('app.fields.customer'))
-                        ->relationship('customer', 'name')
+                        ->relationship('customer', 'display_name')
                         ->searchable()
                         ->preload()
                         ->required()
