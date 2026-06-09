@@ -90,6 +90,8 @@ class PoResource extends Resource
                         TextInput::make('total')
                             ->numeric()
                             ->prefix('Rp')
+                            ->mask('999.999.999.999.999')
+                            ->stripCharacters('.')
                             ->default(0)
                             ->required(),
 

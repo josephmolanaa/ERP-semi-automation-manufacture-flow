@@ -138,6 +138,8 @@ class QuotationResource extends Resource
                                 ->label('Harga Satuan')
                                 ->numeric()
                                 ->prefix('Rp')
+                                ->mask('999.999.999.999.999')
+                                ->stripCharacters('.')
                                 ->required()
                                 ->live(debounce: 500)
                                 ->afterStateUpdated(fn ($state, $set, $get) =>
@@ -148,6 +150,8 @@ class QuotationResource extends Resource
                                 ->label('Subtotal')
                                 ->numeric()
                                 ->prefix('Rp')
+                                ->mask('999.999.999.999.999')
+                                ->stripCharacters('.')
                                 ->disabled()
                                 ->dehydrated(),
 
