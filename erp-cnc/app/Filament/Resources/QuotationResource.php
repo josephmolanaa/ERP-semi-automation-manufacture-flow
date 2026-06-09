@@ -140,11 +140,9 @@ class QuotationResource extends Resource
                                 ->required()
                                 ->live(debounce: 500)
                                 ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
-                                ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null)
                                 ->afterStateUpdated(function ($state, $set, $get) {
                                     $hargaSatuan = (float) str_replace('.', '', (string) $state);
                                     $qty = (float) $get('qty');
-                                    $set('harga_satuan', $hargaSatuan > 0 ? number_format($hargaSatuan, 0, ',', '.') : null);
                                     $set('subtotal', $hargaSatuan * $qty);
                                 }),
 
