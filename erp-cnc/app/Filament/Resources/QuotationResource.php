@@ -125,26 +125,29 @@ class QuotationResource extends Resource
                                 ->numeric()
                                 ->required()
                                 ->live(debounce: 500)
-                                ->afterStateUpdated(fn ($state, $set, $get) =>
-                                    $set('subtotal', (float)$state * (float)$get('harga_satuan'))
-                                ),
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $qty = (float) $state;
+                                    $harga = (float) str_replace('.', '', (string) $get('harga_satuan'));
+                                    $set('subtotal', $qty * $harga);
+                                }),
 
                             Select::make('satuan')
                                 ->options(['pcs' => 'pcs', 'set' => 'set', 'unit' => 'unit', 'kg' => 'kg', 'm' => 'm'])
                                 ->default('pcs')
                                 ->required(),
 
-                            TextInput::make('harga_satuan')
-                                ->label('Harga Satuan')
-                                ->prefix('Rp')
-                                ->required()
-                                ->live(debounce: 500)
-                                ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
-                                ->afterStateUpdated(function ($state, $set, $get) {
-                                    $hargaSatuan = (float) str_replace('.', '', (string) $state);
-                                    $qty = (float) $get('qty');
-                                    $set('subtotal', $hargaSatuan * $qty);
-                                }),
+                             TextInput::make('harga_satuan')
+                                 ->label('Harga Satuan')
+                                 ->prefix('Rp')
+                                 ->required()
+                                 ->live(onBlur: true)
+                                 ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
+                                 ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null)
+                                 ->afterStateUpdated(function ($state, $set, $get) {
+                                     $harga = (float) str_replace('.', '', (string) $state);
+                                     $qty   = (float) $get('qty');
+                                     $set('subtotal', $harga * $qty);
+                                 }),
 
                             TextInput::make('subtotal')
                                 ->label('Subtotal')
