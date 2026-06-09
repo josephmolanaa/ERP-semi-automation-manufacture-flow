@@ -88,12 +88,11 @@ class PoResource extends Resource
                             ->label(__('app.fields.estimate')),
 
                         TextInput::make('total')
-                            ->numeric()
                             ->prefix('Rp')
-                            ->mask('999.999.999.999.999')
-                            ->stripCharacters('.')
                             ->default(0)
-                            ->required(),
+                            ->required()
+                            ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
+                            ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null),
 
                         FileUpload::make('pdf_path')
                             ->label('Upload PDF PO')

@@ -136,23 +136,23 @@ class QuotationResource extends Resource
 
                             TextInput::make('harga_satuan')
                                 ->label('Harga Satuan')
-                                ->numeric()
                                 ->prefix('Rp')
-                                ->mask('999.999.999.999.999')
-                                ->stripCharacters('.')
                                 ->required()
                                 ->live(debounce: 500)
-                                ->afterStateUpdated(fn ($state, $set, $get) =>
-                                    $set('subtotal', (float)$state * (float)$get('qty'))
-                                ),
+                                ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
+                                ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null)
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $hargaSatuan = (float) str_replace('.', '', (string) $state);
+                                    $qty = (float) $get('qty');
+                                    $set('harga_satuan', $hargaSatuan > 0 ? number_format($hargaSatuan, 0, ',', '.') : null);
+                                    $set('subtotal', $hargaSatuan * $qty);
+                                }),
 
                             TextInput::make('subtotal')
                                 ->label('Subtotal')
-                                ->numeric()
                                 ->prefix('Rp')
-                                ->mask('999.999.999.999.999')
-                                ->stripCharacters('.')
                                 ->disabled()
+                                ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null)
                                 ->dehydrated(),
 
                             Textarea::make('keterangan')
