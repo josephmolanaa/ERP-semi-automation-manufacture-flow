@@ -87,12 +87,9 @@ class PoResource extends Resource
                         DatePicker::make('estimasi_selesai')
                             ->label(__('app.fields.estimate')),
 
-                        TextInput::make('total')
-                            ->prefix('Rp')
+                        \Pelmered\FilamentMoneyField\Forms\Components\MoneyInput::make('total')
                             ->default(0)
-                            ->required()
-                            ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
-                            ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null),
+                            ->required(),
 
                         FileUpload::make('pdf_path')
                             ->label('Upload PDF PO')

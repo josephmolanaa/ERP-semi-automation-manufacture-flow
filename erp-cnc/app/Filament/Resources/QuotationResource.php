@@ -136,23 +136,19 @@ class QuotationResource extends Resource
                                 ->default('pcs')
                                 ->required(),
 
-                             TextInput::make('harga_satuan')
+                             \Pelmered\FilamentMoneyField\Forms\Components\MoneyInput::make('harga_satuan')
                                  ->label('Harga Satuan')
-                                 ->numeric()
-                                 ->prefix('Rp')
                                  ->required()
-                                 ->live(debounce: 1500)
+                                 ->live(debounce: 500)
                                  ->afterStateUpdated(function ($state, $set, $get) {
                                      $qty = (float) $get('qty');
                                      $harga = (float) $state;
                                      $set('subtotal', $qty * $harga);
                                  }),
 
-                            TextInput::make('subtotal')
+                            \Pelmered\FilamentMoneyField\Forms\Components\MoneyInput::make('subtotal')
                                 ->label('Subtotal')
-                                ->prefix('Rp')
                                 ->disabled()
-                                ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null)
                                 ->dehydrated(),
 
                             Textarea::make('keterangan')
