@@ -86,16 +86,14 @@ class PoResource extends Resource
 
                         DatePicker::make('estimasi_selesai')
                             ->label(__('app.fields.estimate')),
+
                         TextInput::make('total')
                             ->prefix('Rp')
                             ->default(0)
                             ->required()
-                            ->extraInputAttributes([
-                                'inputmode' => 'numeric',
-                                'x-on:input' => "let val = $el.value.replace(/\D/g, ''); $el.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');",
-                            ])
                             ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
-                            ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) str_replace('.', '', (string) $state), 0, ',', '.') : null),
+                            ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) $state, 0, ',', '.') : null),
+
                         FileUpload::make('pdf_path')
                             ->label('Upload PDF PO')
                             ->disk('public')

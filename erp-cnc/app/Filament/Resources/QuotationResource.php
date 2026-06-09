@@ -135,22 +135,19 @@ class QuotationResource extends Resource
                                 ->options(['pcs' => 'pcs', 'set' => 'set', 'unit' => 'unit', 'kg' => 'kg', 'm' => 'm'])
                                 ->default('pcs')
                                 ->required(),
+
                              TextInput::make('harga_satuan')
                                  ->label('Harga Satuan')
+                                 ->numeric()
                                  ->prefix('Rp')
                                  ->required()
-                                 ->live(debounce: 1000)
-                                 ->extraInputAttributes([
-                                     'inputmode' => 'numeric',
-                                     'x-on:input' => "let val = $el.value.replace(/\D/g, ''); $el.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');",
-                                 ])
-                                 ->formatStateUsing(fn ($state) => filled($state) ? number_format((float) str_replace('.', '', (string) $state), 0, ',', '.') : null)
-                                 ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
+                                 ->live(debounce: 1500)
                                  ->afterStateUpdated(function ($state, $set, $get) {
-                                     $harga = (float) str_replace('.', '', (string) $state);
-                                     $qty   = (float) $get('qty');
-                                     $set('subtotal', $harga * $qty);
+                                     $qty = (float) $get('qty');
+                                     $harga = (float) $state;
+                                     $set('subtotal', $qty * $harga);
                                  }),
+
                             TextInput::make('subtotal')
                                 ->label('Subtotal')
                                 ->prefix('Rp')
