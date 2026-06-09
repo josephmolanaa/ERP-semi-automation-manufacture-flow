@@ -69,6 +69,7 @@ class QuotationResource extends Resource
                         ->label(__('app.fields.customer'))
                         ->relationship('customer', 'name')
                         ->searchable()
+                        ->preload()
                         ->required()
                         ->createOptionForm([
                             TextInput::make('name')->required(),

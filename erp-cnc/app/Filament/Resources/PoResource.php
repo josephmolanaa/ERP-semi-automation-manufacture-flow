@@ -63,6 +63,7 @@ class PoResource extends Resource
                             ->label(__('app.fields.customer'))
                             ->relationship('customer', 'name')
                             ->searchable()
+                            ->preload()
                             ->required(),
 
                         Select::make('quotation_id')
