@@ -140,7 +140,6 @@ class QuotationResource extends Resource
                                  ->label('Harga Satuan')
                                  ->numeric()
                                  ->prefix('Rp')
-                                 ->hint(fn ($state) => filled($state) ? 'Format: Rp ' . number_format((float) $state, 0, ',', '.') : null)
                                  ->required()
                                  ->live(debounce: 1500)
                                  ->afterStateUpdated(function ($state, $set, $get) {

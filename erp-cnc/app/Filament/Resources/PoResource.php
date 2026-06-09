@@ -89,7 +89,6 @@ class PoResource extends Resource
 
                         TextInput::make('total')
                             ->prefix('Rp')
-                            ->hint(fn ($state) => filled($state) ? 'Format: Rp ' . number_format((float) $state, 0, ',', '.') : null)
                             ->default(0)
                             ->required()
                             ->dehydrateStateUsing(fn ($state) => (float) str_replace('.', '', (string) $state))
